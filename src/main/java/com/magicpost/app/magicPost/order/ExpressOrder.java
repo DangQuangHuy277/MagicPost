@@ -2,14 +2,19 @@ package com.magicpost.app.magicPost.order;
 
 import com.magicpost.app.magicPost.good.Good;
 import com.magicpost.app.magicPost.user.Customer;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
+@Getter
+@Setter
 public class ExpressOrder {
     @Id
     @GeneratedValue
@@ -26,6 +31,12 @@ public class ExpressOrder {
     private CashOnDelivery cashOnDelivery;
     private String businessInstructions;
     private Status status;
+
+    private LocalDateTime createTime;
+
+    @ManyToMany(mappedBy = "expressOrders")
+    private Set<TransportOrder> transportOrders = new LinkedHashSet<>();
+
 
     enum Status {
 

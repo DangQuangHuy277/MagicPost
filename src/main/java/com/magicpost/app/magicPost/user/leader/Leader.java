@@ -2,5 +2,5 @@ package com.magicpost.app.magicPost.user.leader;
 
 import com.magicpost.app.magicPost.user.User;
 
-public class Leader extends User {
+public abstract class Leader extends User {
 }
