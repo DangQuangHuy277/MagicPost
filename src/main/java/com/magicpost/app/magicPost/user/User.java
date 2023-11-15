@@ -3,7 +3,7 @@ package com.magicpost.app.magicPost.user;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.validation.constraints.NotNull;
 
-public abstract class User {
+public class User {
     private Long id;
     @NotNull
     private String username;
