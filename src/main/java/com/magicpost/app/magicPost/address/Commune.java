@@ -2,6 +2,7 @@ package com.magicpost.app.magicPost.address;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -10,6 +11,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class Commune {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
