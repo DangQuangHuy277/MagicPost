@@ -2,16 +2,8 @@ services:
   postgres:
     image: 'postgres:latest'
     environment:
-      - 'POSTGRES_DB=auction'
-      - 'POSTGRES_PASSWORD=H27u07y03@'
-      - 'POSTGRES_USER=huy'
+      - 'POSTGRES_DB=magicpost'
+      - 'POSTGRES_PASSWORD=12345'
+      - 'POSTGRES_USER=magicpost'
     ports:
       - '5432'
-    network_mode: host
-  rabbitmq:
-    image: 'rabbitmq:latest'
-    environment:
-      - 'RABBITMQ_DEFAULT_PASS=H27u07y03@'
-      - 'RABBITMQ_DEFAULT_USER=huy'
-    ports:
-      - '5672'
