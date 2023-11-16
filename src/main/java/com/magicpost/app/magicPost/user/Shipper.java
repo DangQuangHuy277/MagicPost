@@ -1,9 +1,7 @@
 package com.magicpost.app.magicPost.user;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.magicpost.app.magicPost.point.TransactionPoint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +17,13 @@ public class Shipper{
     @NotNull
     private String name;
     private String email;
+    @NotNull
     private String phone;
     private Boolean isActive = true;
+
+    @ManyToOne
+    @JoinColumn(name = "transaction_point_id")
+    private TransactionPoint transactionPoint;
+
 }
 
