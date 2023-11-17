@@ -1,8 +1,6 @@
-package com.magicpost.app.magicPost.good;
+package com.magicpost.app.magicPost.order;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Good {
@@ -11,6 +9,7 @@ public class Good {
     private Long id;
     private String name;
     private Long weight;
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     enum Type{

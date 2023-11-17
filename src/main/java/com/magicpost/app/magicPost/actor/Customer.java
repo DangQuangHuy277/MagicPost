@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.user;
+package com.magicpost.app.magicPost.actor;
 
 import com.magicpost.app.magicPost.address.Address;
 import jakarta.persistence.Entity;
@@ -22,6 +22,4 @@ public class Customer {
     private String phone;
     @NotNull
     private Address address;
-    @NotNull
-    public Integer zipcode;
 }

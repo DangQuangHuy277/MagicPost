@@ -1,7 +1,6 @@
-package com.magicpost.app.magicPost.event;
+package com.magicpost.app.magicPost.order;
 
 import com.magicpost.app.magicPost.address.Address;
-import com.magicpost.app.magicPost.order.TransportOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,14 +15,15 @@ import java.util.Objects;
 public class TrackingEvent {
     @Id
     private Long id;
-    private LocalDateTime timestamp;
     private String message;
+    private LocalDateTime timestamp;
     @Embedded
     private Address location;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "transport_order_id")
-    private TransportOrder transportOrder;
+
+//    @ManyToOne
+//    @JoinColumn(name = "express_order_id")
+//    private ExpressOrder expressOrder;
 
     @Override
     public final boolean equals(Object o) {

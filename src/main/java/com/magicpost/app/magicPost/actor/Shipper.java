@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.user;
+package com.magicpost.app.magicPost.actor;
 
 import com.magicpost.app.magicPost.point.TransactionPoint;
 import jakarta.persistence.*;

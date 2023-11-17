@@ -1,6 +1,6 @@
 package com.magicpost.app.magicPost.point;
 
-import com.magicpost.app.magicPost.user.Shipper;
+import com.magicpost.app.magicPost.actor.Shipper;
 import com.magicpost.app.magicPost.user.staff.TransactionStaff;
 import jakarta.persistence.*;
 import lombok.Getter;

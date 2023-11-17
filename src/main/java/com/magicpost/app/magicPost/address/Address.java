@@ -11,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class Address {
     private String street;
+    private String zipcode;
     @ManyToOne
     @JoinColumn(name = "commune_id")
     private Commune commune;
