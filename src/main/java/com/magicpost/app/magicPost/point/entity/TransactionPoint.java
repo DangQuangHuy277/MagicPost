@@ -1,7 +1,9 @@
-package com.magicpost.app.magicPost.point;
+package com.magicpost.app.magicPost.point.entity;
 
 import com.magicpost.app.magicPost.actor.Shipper;
-import com.magicpost.app.magicPost.user.staff.TransactionStaff;
+import com.magicpost.app.magicPost.point.entity.GatheringPoint;
+import com.magicpost.app.magicPost.point.entity.Point;
+import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
