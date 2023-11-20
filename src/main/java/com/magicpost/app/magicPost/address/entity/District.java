@@ -1,28 +1,39 @@
-package com.magicpost.app.magicPost.address;
+package com.magicpost.app.magicPost.address.entity;
 
+import com.magicpost.app.magicPost.address.entity.Commune;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class Commune {
+public class District {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
-
     private String name;
 
+    @OneToMany(mappedBy = "district", orphanRemoval = true)
+    private Set<Commune> communes = new LinkedHashSet<>();
+
     @ManyToOne
-    @JoinColumn(name = "district_id")
-    private District district;
+    @JoinColumn(name = "province_id")
+    private Province province;
+
+
+    public District(String name, Province province) {
+        this.name = name;
+        this.province = province;
+    }
 
     @Override
     public final boolean equals(Object o) {
@@ -31,8 +42,8 @@ public class Commune {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Commune commune = (Commune) o;
-        return getId() != null && Objects.equals(getId(), commune.getId());
+        District district = (District) o;
+        return getId() != null && Objects.equals(getId(), district.getId());
     }
 
     @Override

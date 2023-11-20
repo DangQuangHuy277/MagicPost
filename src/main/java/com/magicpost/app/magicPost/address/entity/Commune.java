@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.address;
+package com.magicpost.app.magicPost.address.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -6,28 +6,28 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class District {
+public class Commune {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id", nullable = false)
     private Long id;
+
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "province_id")
-    private Province province;
+    @JoinColumn(name = "district_id")
+    private District district;
 
-    @OneToMany(mappedBy = "district", orphanRemoval = true)
-    private Set<Commune> communes = new LinkedHashSet<>();
-
+    public Commune(String name, District district) {
+        this.name = name;
+        this.district = district;
+    }
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

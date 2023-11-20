@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.address;
+package com.magicpost.app.magicPost.address.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -22,4 +22,7 @@ public class Province {
     @OneToMany(mappedBy = "province", orphanRemoval = true)
     private Set<District> districts = new LinkedHashSet<>();
 
+    public Province(String name) {
+        this.name = name;
+    }
 }
