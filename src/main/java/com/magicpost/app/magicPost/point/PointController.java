@@ -1,9 +1,6 @@
 package com.magicpost.app.magicPost.point;
 
-import com.magicpost.app.magicPost.point.dto.GatheringPointResponse;
-import com.magicpost.app.magicPost.point.dto.PointRequest;
-import com.magicpost.app.magicPost.point.dto.PointResponse;
-import com.magicpost.app.magicPost.point.dto.TransactionPointResponse;
+import com.magicpost.app.magicPost.point.dto.*;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
 import jakarta.validation.Valid;
@@ -58,5 +55,26 @@ public class PointController {
         TransactionPointResponse newPoint = pointService.createNewTransactionPoint(gatheringPointId, pointRequest);
         return ResponseEntity.created(URI.create("/api/v1/points/" + newPoint.getId()))
                 .body(newPoint);
+    }
+
+    @PatchMapping("/points/{point-id}")
+    ResponseEntity<?> updatePoint(@PathVariable("point-id") Long pointId,
+                                  @RequestBody PointRequest pointRequest) {
+        PointResponse updatedPoint = pointService.updatePoint(pointId, pointRequest);
+        return ResponseEntity.ok(updatedPoint);
+    }
+
+    @PatchMapping("transaction-points/{transaction-point-id}")
+    ResponseEntity<?> changeGatheringPointOfTransactionPoint(@PathVariable("transaction-point-id") Long transactionPointId,
+                                                             @RequestBody TransactionPointRequest transactionPointRequest) {
+        TransactionPointResponse updatedTransactionPoint =
+                pointService.changeGatheringPointOfTransactionPoint(transactionPointId, transactionPointRequest);
+        return ResponseEntity.ok(updatedTransactionPoint);
+    }
+
+    @DeleteMapping("/points/{point-id}")
+    ResponseEntity<?> deletePoint(@PathVariable("point-id") Long pointId){
+        pointService.deletePoint(pointId);
+        return ResponseEntity.noContent().build();
     }
 }
