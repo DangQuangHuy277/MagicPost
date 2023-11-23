@@ -1,6 +1,6 @@
 package com.magicpost.app.magicPost.transport;
 
-import com.magicpost.app.magicPost.point.Point;
+import com.magicpost.app.magicPost.point.entity.Point;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;

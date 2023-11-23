@@ -1,18 +1,21 @@
 package com.magicpost.app.magicPost.actor;
 
-import com.magicpost.app.magicPost.point.TransactionPoint;
+import com.magicpost.app.magicPost.point.entity.TransactionPoint;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Entity
 @Getter
 @Setter
 public class Shipper{
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotNull
     private String name;

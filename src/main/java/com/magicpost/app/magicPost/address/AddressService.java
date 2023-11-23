@@ -8,6 +8,7 @@ import com.magicpost.app.magicPost.address.repository.CommuneRepository;
 import com.magicpost.app.magicPost.address.repository.DistrictRepository;
 import com.magicpost.app.magicPost.address.entity.Province;
 import com.magicpost.app.magicPost.address.repository.ProvinceRepository;
+import com.magicpost.app.magicPost.exception.InvalidRequestDataException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,11 @@ public class AddressService {
     private final CommuneRepository communeRepository;
 
     public Address checkAndCreateAddress(AddressDTO addressRequest) {
+        if (addressRequest == null) return null;
+        if (addressRequest.getCommune() == null ||
+                addressRequest.getDistrict() == null ||
+                addressRequest.getProvince() == null)
+            throw new InvalidRequestDataException("The address must include all of commune, district, province");
 
         Province province = provinceRepository.findByName(addressRequest.getProvince()).
                 orElseGet(() -> provinceRepository.save(new Province(addressRequest.getProvince())));
@@ -48,6 +54,5 @@ public class AddressService {
 //            provinceRepository.save(province);
         } else commune = optionalCommune.get();
         return new Address(addressRequest.getStreet(), addressRequest.getZipcode(), commune);
-
     }
 }

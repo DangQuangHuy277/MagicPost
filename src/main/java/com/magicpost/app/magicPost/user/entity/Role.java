@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.user;
+package com.magicpost.app.magicPost.user.entity;
 
 public enum Role {
     COMPANY_LEADER,

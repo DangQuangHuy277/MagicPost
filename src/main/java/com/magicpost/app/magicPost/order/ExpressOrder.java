@@ -1,9 +1,12 @@
 package com.magicpost.app.magicPost.order;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.magicpost.app.magicPost.actor.Customer;
 import com.magicpost.app.magicPost.transport.TransportOrder;
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
 
@@ -13,12 +16,11 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class ExpressOrder {
     @Id
-    @GeneratedValue
-    private Long id;
-    //    @OneToOne
-//    private Good good;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private Customer sender;
@@ -27,32 +29,55 @@ public class ExpressOrder {
     @JoinColumn(name = "receiver_id")
     private Customer receiver;
 
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    @OneToMany(orphanRemoval = true)
+    @JoinColumn(name = "express_order_id")
+    private List<Good> goods = new ArrayList<>();
+
     private String specialService;
 
     @Enumerated(EnumType.STRING)
     private Instructor senderInstructor;
 
-    private String senderCommitment;
+    //    private String senderCommitment;
     private LocalDateTime sendTime;
-    private LocalDateTime receivedTime;
+
     private Price price;
+
     private CashOnDelivery cashOnDelivery;
+
+    private Double actualWeight;
+
+    private Double volumetricWeight;
+
     private String businessInstructions;
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private LocalDateTime receivedTime;
 
-    private LocalDateTime createTime;
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.POSTED;
+
+    private LocalDateTime createTime = LocalDateTime.now();
 
     @ManyToMany(mappedBy = "expressOrders")
-    private Set<TransportOrder> transportOrders = new LinkedHashSet<>();
+    @JsonIgnore
+    private List<TransportOrder> transportOrders = new ArrayList<>();
 
-    @OneToMany(/*mappedBy = "expressOrder",*/ orphanRemoval = true)
-    @JoinColumn(name = "expressOrder", nullable = false)
+    @OneToMany(mappedBy = "expressOrder", orphanRemoval = true)
 //    @OrderBy("trackingEvent.timestamp")
+    @JsonIgnore
     private List<TrackingEvent> trackingEvents = new ArrayList<>();
 
-    enum Status {
+
+
+    public enum Type {
+        DOCUMENT,
+        GOOD
+    }
+
+    public enum Status {
         POSTED,
         PRINTED_DELIVERY_RECEIPT,
         TRANSPORTING_FROM_SRC_TRANSACTION,
@@ -76,6 +101,8 @@ public class ExpressOrder {
     }
 
     @Embeddable
+    @Getter
+    @Setter
     public static class Price {
         private Double mainTax;
         private Double subTax;
@@ -86,26 +113,12 @@ public class ExpressOrder {
     }
 
     @Embeddable
+    @Getter
+    @Setter
     public static class CashOnDelivery {
         private Double cod;
         private Double other;
         private Double totalCOD;
-    }
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        ExpressOrder that = (ExpressOrder) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }
 

@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -34,6 +36,6 @@ public abstract class Point {
     @JoinTable(name = "point_inventory",
             joinColumns = @JoinColumn(name = "point_id"),
             inverseJoinColumns = @JoinColumn(name = "inventory_id"))
-    private Set<ExpressOrder> inventory = new LinkedHashSet<>();
+    private List<ExpressOrder> inventory = new ArrayList<>();
 
 }

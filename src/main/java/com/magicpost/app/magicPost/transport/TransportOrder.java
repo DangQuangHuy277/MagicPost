@@ -1,14 +1,13 @@
 package com.magicpost.app.magicPost.transport;
 
 import com.magicpost.app.magicPost.order.ExpressOrder;
-import com.magicpost.app.magicPost.point.Point;
+import com.magicpost.app.magicPost.point.entity.Point;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Setter
@@ -16,8 +15,8 @@ import java.util.Set;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class TransportOrder {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    protected Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    protected UUID id;
 
     @ManyToOne
     @JoinColumn(name = "from_point_id")
@@ -33,7 +32,7 @@ public abstract class TransportOrder {
     @JoinTable(name = "express_orders_transport_order",
             joinColumns = @JoinColumn(name = "transport_order_id"),
             inverseJoinColumns = @JoinColumn(name = "express_orders_id"))
-    private Set<ExpressOrder> expressOrders = new LinkedHashSet<>();
+    private List<ExpressOrder> expressOrders = new ArrayList<>();
 
     public enum Status {
 //        WAITING,

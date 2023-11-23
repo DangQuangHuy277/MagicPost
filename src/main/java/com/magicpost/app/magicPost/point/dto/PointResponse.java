@@ -15,5 +15,4 @@ public class PointResponse {
     private AddressDTO address;
     private String phone;
     private String email;
-
 }

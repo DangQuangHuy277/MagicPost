@@ -4,13 +4,13 @@ import com.magicpost.app.magicPost.address.AddressService;
 import com.magicpost.app.magicPost.address.entity.Address;
 import com.magicpost.app.magicPost.exception.ResourceAlreadyExistsException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
-import com.magicpost.app.magicPost.point.dto.GatheringPointResponse;
-import com.magicpost.app.magicPost.point.dto.PointRequest;
-import com.magicpost.app.magicPost.point.dto.PointResponse;
-import com.magicpost.app.magicPost.point.dto.TransactionPointResponse;
+import com.magicpost.app.magicPost.point.dto.*;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
+import com.magicpost.app.magicPost.point.repository.GatheringPointRepository;
+import com.magicpost.app.magicPost.point.repository.PointRepository;
+import com.magicpost.app.magicPost.point.repository.TransactionPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,8 @@ public class PointService {
     private final AddressService addressService;
     private final ModelMapper modelMapper;
     private final PointRepository<Point> pointRepository;
-    private final PointRepository<GatheringPoint> gatheringPointRepository;
-    private final PointRepository<TransactionPoint> transactionPointRepository;
+    private final GatheringPointRepository gatheringPointRepository;
+    private final TransactionPointRepository transactionPointRepository;
 
 
     public List<PointResponse> getAllPoints() {
@@ -39,7 +39,6 @@ public class PointService {
     }
 
     public List<GatheringPointResponse> getAllGatheringPoints() {
-//        List<GatheringPoint> gatheringPoints = pointRepository.findAllGatheringPoint();
         List<GatheringPoint> gatheringPoints = gatheringPointRepository.findAll();
         return gatheringPoints.stream()
                 .map((element) -> modelMapper.map(element, GatheringPointResponse.class))
@@ -47,7 +46,6 @@ public class PointService {
     }
 
     public List<TransactionPointResponse> getAllTransactionPoints() {
-//        List<TransactionPoint> transactionPoints = pointRepository.findAllTransactionPoint();
         List<TransactionPoint> transactionPoints = transactionPointRepository.findAll();
         return transactionPoints.stream()
                 .map((element) -> modelMapper.map(element, TransactionPointResponse.class))
@@ -84,5 +82,37 @@ public class PointService {
         TransactionPointResponse transactionPointResponse = modelMapper.map(newTransactionPoint, TransactionPointResponse.class);
         transactionPointResponse.setGatheringPointId(newTransactionPoint.getGatheringPoint().getId());
         return transactionPointResponse;
+    }
+
+    public PointResponse updatePoint(Long pointId, PointRequest pointRequest) {
+        Point point = pointRepository.findById(pointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Point"));
+        if (pointRequest.getName() != null)
+            point.setName(pointRequest.getName());
+        if (pointRequest.getPhone() != null)
+            point.setPhone(pointRequest.getPhone());
+        if (pointRequest.getEmail() != null)
+            point.setEmail(pointRequest.getEmail());
+        if (pointRequest.getAddress() != null) {
+            Address newAddress = addressService.checkAndCreateAddress(pointRequest.getAddress());
+            point.setAddress(newAddress);
+        }
+        return modelMapper.map(pointRepository.save(point), PointResponse.class);
+    }
+
+    public TransactionPointResponse changeGatheringPointOfTransactionPoint(Long transactionPointId, TransactionPointRequest transactionPointRequest) {
+        Long gatheringPointId = transactionPointRequest.getGatheringPointId();
+        GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
+        transactionPoint.setGatheringPoint(gatheringPoint);
+        gatheringPoint.getManageTransactionPoints().add(transactionPoint);
+        gatheringPointRepository.save(gatheringPoint);
+        return modelMapper.map(transactionPointRepository.save(transactionPoint), TransactionPointResponse.class);
+    }
+
+    public void deletePoint(Long pointId) {
+        pointRepository.deleteById(pointId);
     }
 }
