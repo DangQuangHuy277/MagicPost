@@ -17,12 +17,12 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class AddressService {
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
     private final CommuneRepository communeRepository;
 
+    @Transactional
     public Address checkAndCreateAddress(AddressDTO addressRequest) {
         if (addressRequest == null) return null;
         if (addressRequest.getCommune() == null ||

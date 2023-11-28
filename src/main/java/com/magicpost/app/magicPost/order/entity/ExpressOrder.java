@@ -1,14 +1,13 @@
-package com.magicpost.app.magicPost.order;
+package com.magicpost.app.magicPost.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.magicpost.app.magicPost.actor.Customer;
-import com.magicpost.app.magicPost.transport.TransportOrder;
-import io.swagger.v3.oas.annotations.Hidden;
+import com.magicpost.app.magicPost.order.Good;
+import com.magicpost.app.magicPost.transport.entity.TransportOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,8 +31,9 @@ public class ExpressOrder {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @OneToMany(orphanRemoval = true)
-    @JoinColumn(name = "express_order_id")
+
+    @ElementCollection
+    @CollectionTable(name = "Good", joinColumns = @JoinColumn(name = "express_order_id"))
     private List<Good> goods = new ArrayList<>();
 
     private String specialService;
@@ -65,9 +65,8 @@ public class ExpressOrder {
     @JsonIgnore
     private List<TransportOrder> transportOrders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "expressOrder", orphanRemoval = true)
-//    @OrderBy("trackingEvent.timestamp")
-    @JsonIgnore
+    @ElementCollection
+    @CollectionTable(name = "tracking_event", joinColumns = @JoinColumn(name = "express_order_id"))
     private List<TrackingEvent> trackingEvents = new ArrayList<>();
 
 
@@ -79,7 +78,6 @@ public class ExpressOrder {
 
     public enum Status {
         POSTED,
-        PRINTED_DELIVERY_RECEIPT,
         TRANSPORTING_FROM_SRC_TRANSACTION,
         TRANSPORTED_TO_SRC_GATHERING,
         TRANSPORTING_FROM_SRC_GATHERING,

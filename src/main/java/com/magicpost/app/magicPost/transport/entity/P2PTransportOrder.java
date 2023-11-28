@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.transport;
+package com.magicpost.app.magicPost.transport.entity;
 
 import com.magicpost.app.magicPost.point.entity.Point;
 import jakarta.persistence.Entity;
@@ -10,8 +10,8 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class P2PTransportOrder extends TransportOrder{
+public class P2PTransportOrder extends TransportOrder {
     @ManyToOne
     @JoinColumn(name = "to_point_id")
-    private Point toPoint;
+    private Point to;
 }

@@ -1,18 +1,12 @@
 package com.magicpost.app.magicPost.order.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.magicpost.app.magicPost.actor.Customer;
 import com.magicpost.app.magicPost.actor.dto.CustomerDTO;
-import com.magicpost.app.magicPost.order.ExpressOrder;
+import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.order.Good;
-import com.magicpost.app.magicPost.order.TrackingEvent;
-import com.magicpost.app.magicPost.transport.TransportOrder;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 

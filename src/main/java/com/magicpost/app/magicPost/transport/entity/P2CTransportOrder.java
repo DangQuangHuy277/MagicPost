@@ -1,4 +1,4 @@
-package com.magicpost.app.magicPost.transport;
+package com.magicpost.app.magicPost.transport.entity;
 
 import com.magicpost.app.magicPost.actor.Shipper;
 import jakarta.persistence.Entity;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-public class P2CTransportOrder extends TransportOrder{
+public class P2CTransportOrder extends TransportOrder {
     @ManyToOne
     @JoinColumn(name = "shipper_id")
     private Shipper shipper;

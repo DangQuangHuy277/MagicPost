@@ -1,8 +1,7 @@
 package com.magicpost.app.magicPost.order.dto;
 
-import com.magicpost.app.magicPost.actor.Customer;
 import com.magicpost.app.magicPost.actor.dto.CustomerDTO;
-import com.magicpost.app.magicPost.order.ExpressOrder;
+import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.order.Good;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

@@ -1,9 +1,10 @@
-package com.magicpost.app.magicPost.transport;
+package com.magicpost.app.magicPost.transport.entity;
 
-import com.magicpost.app.magicPost.order.ExpressOrder;
+import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.point.entity.Point;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.util.*;
 @Setter
 @Getter
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@NoArgsConstructor
 public abstract class TransportOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

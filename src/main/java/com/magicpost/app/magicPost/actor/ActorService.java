@@ -5,6 +5,7 @@ import com.magicpost.app.magicPost.actor.CustomerRepository;
 import com.magicpost.app.magicPost.actor.dto.CustomerDTO;
 import com.magicpost.app.magicPost.address.AddressService;
 import com.magicpost.app.magicPost.address.entity.Address;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ public class ActorService {
     private final CustomerRepository customerRepository;
     private final AddressService addressService;
 
+    @Transactional
     public Customer checkAndCreateCustomer(CustomerDTO customerDTO){
         Address address = addressService.checkAndCreateAddress(customerDTO.getAddress());
         Customer customer = customerRepository.findByPhone(customerDTO.getPhone())

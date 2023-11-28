@@ -4,10 +4,8 @@ import com.magicpost.app.magicPost.actor.Customer;
 import com.magicpost.app.magicPost.actor.dto.CustomerDTO;
 import com.magicpost.app.magicPost.address.dto.AddressDTO;
 import com.magicpost.app.magicPost.address.entity.Address;
-import com.magicpost.app.magicPost.order.ExpressOrder;
-import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
-import com.magicpost.app.magicPost.point.dto.PointResponse;
-import com.magicpost.app.magicPost.point.entity.Point;
+import com.magicpost.app.magicPost.order.dto.TrackingEventResponse;
+import com.magicpost.app.magicPost.order.entity.TrackingEvent;
 import com.magicpost.app.magicPost.user.dto.UserResponse;
 import com.magicpost.app.magicPost.user.entity.User;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
@@ -78,7 +76,6 @@ public class ModelMapperConfig {
         modelMapper.addConverter(userResponseConverter());
         modelMapper.addMappings(addressDTOPropertyMap());
         modelMapper.addMappings(customerDTOPropertyMap());
-
         modelMapper.createTypeMap(CompanyLeader.class, UserResponse.class).setConverter(userResponseConverter());
         modelMapper.createTypeMap(GatheringLeader.class, UserResponse.class).setConverter(userResponseConverter());
         modelMapper.createTypeMap(TransactionLeader.class, UserResponse.class).setConverter(userResponseConverter());

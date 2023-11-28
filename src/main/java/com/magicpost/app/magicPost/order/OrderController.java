@@ -2,12 +2,16 @@ package com.magicpost.app.magicPost.order;
 
 import com.magicpost.app.magicPost.order.dto.ExpressOrderRequest;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
+import com.magicpost.app.magicPost.order.dto.TrackingEventResponse;
+import com.magicpost.app.magicPost.order.entity.TrackingEvent;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -21,5 +25,11 @@ public class OrderController {
         ExpressOrderResponse returnOrder = orderService.createNewExpressOrder(transactionPointId ,expressOrderRequest);
         return ResponseEntity.created(URI.create("/api/v1/express-orders/" + returnOrder.getId()))
                 .body(returnOrder);
+    }
+
+    @GetMapping("/express-orders/{express-order-id}/tracking-events")
+    ResponseEntity<?> getTrackingEventOfOrder(@PathVariable("express-order-id")UUID expressOrderId){
+        List<TrackingEventResponse> trackingEvents = orderService.getTrackingEventOfOrder(expressOrderId);
+        return trackingEvents.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(trackingEvents);
     }
 }

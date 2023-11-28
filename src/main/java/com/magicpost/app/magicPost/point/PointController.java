@@ -1,5 +1,6 @@
 package com.magicpost.app.magicPost.point;
 
+import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
 import com.magicpost.app.magicPost.point.dto.*;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
@@ -76,5 +77,11 @@ public class PointController {
     ResponseEntity<?> deletePoint(@PathVariable("point-id") Long pointId){
         pointService.deletePoint(pointId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("points/{point-id}/inventory")
+    ResponseEntity<?> getInventoryOfPoint(@PathVariable("point-id") Long pointId){
+        List<ExpressOrderResponse> inventory = pointService.getInventoryOfPoint(pointId);
+        return inventory.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(inventory);
     }
 }
