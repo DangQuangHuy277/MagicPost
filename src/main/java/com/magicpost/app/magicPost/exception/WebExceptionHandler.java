@@ -23,8 +23,8 @@ public class WebExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    @ExceptionHandler(InvalidRequestDataException.class)
-    ResponseEntity<?> handleInvalidRequestData(InvalidRequestDataException ex){
+    @ExceptionHandler(InvalidBusinessConditionException.class)
+    ResponseEntity<?> handleInvalidRequestData(InvalidBusinessConditionException ex){
         HashMap<String, String> error = new HashMap<>();
         error.put("message", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);

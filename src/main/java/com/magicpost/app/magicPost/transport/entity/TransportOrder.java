@@ -30,11 +30,15 @@ public abstract class TransportOrder {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToMany
-    @JoinTable(name = "express_orders_transport_order",
-            joinColumns = @JoinColumn(name = "transport_order_id"),
-            inverseJoinColumns = @JoinColumn(name = "express_orders_id"))
-    private List<ExpressOrder> expressOrders = new ArrayList<>();
+//    @ManyToMany
+//    @JoinTable(name = "express_orders_transport_order",
+//            joinColumns = @JoinColumn(name = "transport_order_id"),
+//            inverseJoinColumns = @JoinColumn(name = "express_orders_id"))
+//    private List<ExpressOrder> expressOrders = new ArrayList<>();
+
+    @OneToMany(mappedBy = "transportOrder")
+    @MapKey(name = "id")
+    private Map<UUID, ExpressOrder> expressOrders = new HashMap<>();
 
     public enum Status {
 //        WAITING,

@@ -1,8 +1,8 @@
 package com.magicpost.app.magicPost.order;
 
 import com.magicpost.app.magicPost.actor.ActorService;
-import com.magicpost.app.magicPost.actor.Customer;
-import com.magicpost.app.magicPost.exception.InvalidRequestDataException;
+import com.magicpost.app.magicPost.actor.entity.Customer;
+import com.magicpost.app.magicPost.exception.InvalidBusinessConditionException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderRequest;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +42,7 @@ public class OrderService {
 
         //set customer
         if (expressOrderRequest.getReceiver().getPhone().equals(expressOrderRequest.getSender().getPhone()))
-            throw new InvalidRequestDataException("Each customer must have unique phone");
+            throw new InvalidBusinessConditionException("Each customer must have unique phone");
         Customer sender = actorService.checkAndCreateCustomer(expressOrderRequest.getSender());
         newExpressOrder.setSender(sender);
         Customer receiver = actorService.checkAndCreateCustomer(expressOrderRequest.getReceiver());

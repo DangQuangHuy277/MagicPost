@@ -8,7 +8,7 @@ import com.magicpost.app.magicPost.address.repository.CommuneRepository;
 import com.magicpost.app.magicPost.address.repository.DistrictRepository;
 import com.magicpost.app.magicPost.address.entity.Province;
 import com.magicpost.app.magicPost.address.repository.ProvinceRepository;
-import com.magicpost.app.magicPost.exception.InvalidRequestDataException;
+import com.magicpost.app.magicPost.exception.InvalidBusinessConditionException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ public class AddressService {
         if (addressRequest.getCommune() == null ||
                 addressRequest.getDistrict() == null ||
                 addressRequest.getProvince() == null)
-            throw new InvalidRequestDataException("The address must include all of commune, district, province");
+            throw new InvalidBusinessConditionException("The address must include all of commune, district, province");
 
         Province province = provinceRepository.findByName(addressRequest.getProvince()).
                 orElseGet(() -> provinceRepository.save(new Province(addressRequest.getProvince())));

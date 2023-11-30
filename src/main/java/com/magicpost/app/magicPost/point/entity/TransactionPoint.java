@@ -1,10 +1,7 @@
 package com.magicpost.app.magicPost.point.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.magicpost.app.magicPost.actor.Shipper;
-import com.magicpost.app.magicPost.point.entity.GatheringPoint;
-import com.magicpost.app.magicPost.point.entity.Point;
+import com.magicpost.app.magicPost.actor.entity.Shipper;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
 import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
 import jakarta.persistence.*;
@@ -29,7 +26,8 @@ public class TransactionPoint extends Point {
     private TransactionLeader transactionLeader = null;
 
     @OneToMany(mappedBy = "transactionPoint", orphanRemoval = true)
-    private Set<Shipper> shipperSet = new LinkedHashSet<>();
+    private Set<Shipper> shippers = new LinkedHashSet<>();
+
 
     @OneToMany(mappedBy = "transactionPoint", orphanRemoval = true)
     @JsonManagedReference

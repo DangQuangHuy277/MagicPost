@@ -1,7 +1,7 @@
 package com.magicpost.app.magicPost.order.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.magicpost.app.magicPost.actor.Customer;
+import com.magicpost.app.magicPost.actor.entity.Customer;
 import com.magicpost.app.magicPost.order.Good;
 import com.magicpost.app.magicPost.transport.entity.TransportOrder;
 import jakarta.persistence.*;
@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -61,14 +63,18 @@ public class ExpressOrder {
 
     private LocalDateTime createTime = LocalDateTime.now();
 
-    @ManyToMany(mappedBy = "expressOrders")
+    @ManyToOne
+    @JoinTable(
+            name = "express_orders_transport_order",
+            joinColumns = @JoinColumn(name = "express_orders_id"),
+            inverseJoinColumns = @JoinColumn(name = "transport_order_id")
+    )
     @JsonIgnore
-    private List<TransportOrder> transportOrders = new ArrayList<>();
+    private TransportOrder transportOrder;
 
     @ElementCollection
     @CollectionTable(name = "tracking_event", joinColumns = @JoinColumn(name = "express_order_id"))
     private List<TrackingEvent> trackingEvents = new ArrayList<>();
-
 
 
     public enum Type {

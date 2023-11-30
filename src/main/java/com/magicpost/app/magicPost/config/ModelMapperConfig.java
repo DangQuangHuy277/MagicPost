@@ -1,11 +1,9 @@
 package com.magicpost.app.magicPost.config;
 
-import com.magicpost.app.magicPost.actor.Customer;
+import com.magicpost.app.magicPost.actor.entity.Customer;
 import com.magicpost.app.magicPost.actor.dto.CustomerDTO;
 import com.magicpost.app.magicPost.address.dto.AddressDTO;
 import com.magicpost.app.magicPost.address.entity.Address;
-import com.magicpost.app.magicPost.order.dto.TrackingEventResponse;
-import com.magicpost.app.magicPost.order.entity.TrackingEvent;
 import com.magicpost.app.magicPost.user.dto.UserResponse;
 import com.magicpost.app.magicPost.user.entity.User;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;

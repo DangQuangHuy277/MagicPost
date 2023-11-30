@@ -9,8 +9,8 @@ import java.util.UUID;
 
 @Getter
 @Setter
-public class P2PTransportOrderRequest {
+public class P2CTransportOrderRequest{
     List<UUID> expressOrderIdList;
     @Schema(description = "no need to specify when send from transaction point to gathering point")
-    Long destinationPointId;
+    UUID shipperId;
 }

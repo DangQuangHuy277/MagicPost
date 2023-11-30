@@ -1,5 +1,6 @@
-package com.magicpost.app.magicPost.actor;
+package com.magicpost.app.magicPost.actor.repository;
 
+import com.magicpost.app.magicPost.actor.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

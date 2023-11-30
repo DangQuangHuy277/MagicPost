@@ -1,9 +1,10 @@
-package com.magicpost.app.magicPost.actor;
+package com.magicpost.app.magicPost.actor.entity;
 
-import com.magicpost.app.magicPost.point.entity.TransactionPoint;
+import com.magicpost.app.magicPost.address.entity.Address;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,21 +15,21 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Shipper{
+@AllArgsConstructor
+public class Customer {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @NotNull
     private String name;
-    private String email;
     @NotNull
+    @Column(nullable = false, unique = true)
     private String phone;
-    private Boolean isActive = true;
+    @NotNull
+    private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "transaction_point_id")
-    private TransactionPoint transactionPoint;
-
+    public Customer(String phone) {
+        this.phone = phone;
+    }
 }
-
