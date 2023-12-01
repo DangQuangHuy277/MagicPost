@@ -71,10 +71,13 @@ public class TransportService {
                                                                        P2PTransportOrderRequest transportOrderRequest) {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction point"));
-
+        GatheringPoint gatheringPoint = gatheringPointRepository.findById(transportOrderRequest.getDestinationPointId())
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        if (!transactionPoint.getGatheringPoint().equals(gatheringPoint))
+            throw new InvalidBusinessConditionException("The destination Point is not the Gathering Point that manage this Transaction Point");
         P2PTransportOrder newP2PTransportOrder = makeP2pTransport(
                 transactionPoint,
-                transactionPoint.getGatheringPoint(),
+                gatheringPoint,
                 transportOrderRequest);
         return modelMapper.map(transportOrderRepository.save(newP2PTransportOrder), P2PTransportOrderResponse.class);
     }
@@ -82,13 +85,19 @@ public class TransportService {
     @Transactional
     public P2PTransportOrderResponse makeTransportOrderFromGather(Long gatheringPointId,
                                                                   P2PTransportOrderRequest transportOrderRequest) {
+        if(gatheringPointId.equals(transportOrderRequest.getDestinationPointId()))
+            throw new InvalidBusinessConditionException("The Point can't not send Transport Order to itself");
         GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
         Point point = pointRepository.findById(transportOrderRequest.getDestinationPointId())
                 .orElseThrow(() -> new ResourceNotFoundException("Point"));
         P2PTransportOrder p2PTransportOrder = switch (point) {
             case GatheringPoint gp -> makeP2pTransport(gatheringPoint, gp, transportOrderRequest);
-            case TransactionPoint tp -> makeP2pTransport(gatheringPoint, tp, transportOrderRequest);
+            case TransactionPoint tp -> {
+                if(!tp.getGatheringPoint().equals(gatheringPoint))
+                    throw new InvalidBusinessConditionException("Can't send Transport Order that doesn't manage by this Gathering Point");
+                yield makeP2pTransport(gatheringPoint, tp, transportOrderRequest);
+            }
             default -> throw new IllegalStateException("Unexpected value: " + point);
         };
         return modelMapper.map(p2PTransportOrder, P2PTransportOrderResponse.class);
@@ -228,13 +237,22 @@ public class TransportService {
                     expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_SRC_GATHERING);
                     trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_SRC_GATHERING);
                 }
-                case ExpressOrder.Status.TRANSPORTING_FROM_SRC_GATHERING -> {
-                    expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_GATHERING);
-                    trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_GATHERING);
-                }
                 case ExpressOrder.Status.TRANSPORTING_FROM_DES_GATHERING -> {
                     expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_TRANSACTION);
                     trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_TRANSACTION);
+                }
+                case ExpressOrder.Status.TRANSPORTING_FROM_SRC_GATHERING -> {
+                    switch (p2pTransportOrder.getTo() ){
+                        case GatheringPoint gp-> {
+                            expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_GATHERING);
+                            trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_GATHERING);
+                        }
+                        case TransactionPoint tp -> {
+                            expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_TRANSACTION);
+                            trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_TRANSACTION);
+                        }
+                        default -> throw new IllegalStateException("Unexpected value: " + p2pTransportOrder.getTo());
+                    }
                 }
                 case ExpressOrder.Status.CANCELING -> {
                     //TODO: Need a way to check source transactionPoint of this return
@@ -246,7 +264,8 @@ public class TransportService {
 
             expressOrder.getTrackingEvents().add(trackingEvent);
 //            trackingEvent = trackingEventRepository.save(trackingEvent);
-            if(!expressOrder.getStatus().equals(ExpressOrder.Status.CANCELED))expressOrder = expressOrderRepository.save(expressOrder);
+            if (!expressOrder.getStatus().equals(ExpressOrder.Status.CANCELED))
+                expressOrder = expressOrderRepository.save(expressOrder);
 
             // * Add to Inventory of destination
             p2pTransportOrder.getTo().getInventory().putIfAbsent(expressOrder.getId(), expressOrder);
