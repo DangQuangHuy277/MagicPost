@@ -88,5 +88,12 @@ public class TransportController {
         return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
     }
 
-
+    @PutMapping("transaction-points/{transaction-point-id}/p2c-transport-orders/{p2c-transport-order-id}/express-orders/{express-order-id}/cancel")
+    ResponseEntity<?> cancelExpressOrderAtReceiver(@PathVariable("transaction-point-id") Long transactionPointId,
+                                                   @PathVariable("p2c-transport-order-id") UUID p2CTransportOrderId,
+                                                   @PathVariable("express-order-id") UUID expressOrderId){
+        boolean isCanceled = transportService.cancelExpressOrderAtReceiver(transactionPointId, p2CTransportOrderId, expressOrderId);
+        String message = "Cancel successful";
+        return isCanceled ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
+    }
 }

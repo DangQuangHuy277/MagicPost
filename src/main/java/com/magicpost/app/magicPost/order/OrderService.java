@@ -37,10 +37,11 @@ public class OrderService {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
 
+        // * map field in request
         ExpressOrder newExpressOrder = modelMapper.map(expressOrderRequest, ExpressOrder.class);
 
 
-        //set customer
+        // * set customer
         if (expressOrderRequest.getReceiver().getPhone().equals(expressOrderRequest.getSender().getPhone()))
             throw new InvalidBusinessConditionException("Each customer must have unique phone");
         Customer sender = actorService.checkAndCreateCustomer(expressOrderRequest.getSender());
@@ -48,10 +49,13 @@ public class OrderService {
         Customer receiver = actorService.checkAndCreateCustomer(expressOrderRequest.getReceiver());
         newExpressOrder.setReceiver(receiver);
 
-        //set tracking event
+        // * set tracking event
         TrackingEvent postedEvent = new TrackingEvent(TrackingEvent.POSTED, LocalDateTime.now(), transactionPoint.getAddress());
 //        postedEvent = trackingEventRepository.save(postedEvent);
         newExpressOrder.getTrackingEvents().add(postedEvent);
+
+        // * set source Transaction Point
+        newExpressOrder.setSourcePoint(transactionPoint);
 
         newExpressOrder = expressOrderRepository.save(newExpressOrder);
         transactionPoint.getInventory().putIfAbsent(newExpressOrder.getId(), newExpressOrder);

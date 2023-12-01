@@ -75,8 +75,7 @@ public class TransportService {
         P2PTransportOrder newP2PTransportOrder = makeP2pTransport(
                 transactionPoint,
                 transactionPoint.getGatheringPoint(),
-                transportOrderRequest,
-                ExpressOrder.Status.TRANSPORTING_FROM_SRC_TRANSACTION);
+                transportOrderRequest);
         return modelMapper.map(transportOrderRepository.save(newP2PTransportOrder), P2PTransportOrderResponse.class);
     }
 
@@ -88,22 +87,19 @@ public class TransportService {
         Point point = pointRepository.findById(transportOrderRequest.getDestinationPointId())
                 .orElseThrow(() -> new ResourceNotFoundException("Point"));
         P2PTransportOrder p2PTransportOrder = switch (point) {
-            case GatheringPoint gp ->
-                    makeP2pTransport(gatheringPoint, gp, transportOrderRequest, ExpressOrder.Status.TRANSPORTING_FROM_SRC_GATHERING);
-            case TransactionPoint tp ->
-                    makeP2pTransport(gatheringPoint, tp, transportOrderRequest, ExpressOrder.Status.TRANSPORTING_FROM_DES_GATHERING);
+            case GatheringPoint gp -> makeP2pTransport(gatheringPoint, gp, transportOrderRequest);
+            case TransactionPoint tp -> makeP2pTransport(gatheringPoint, tp, transportOrderRequest);
             default -> throw new IllegalStateException("Unexpected value: " + point);
         };
         return modelMapper.map(p2PTransportOrder, P2PTransportOrderResponse.class);
     }
 
-    // !TODO: Consider when canceled
     @Transactional
     private P2PTransportOrder makeP2pTransport(Point srcPoint,
                                                Point desPoint,
-                                               P2PTransportOrderRequest transportOrderRequest,
-                                               ExpressOrder.Status status) {
+                                               P2PTransportOrderRequest transportOrderRequest) {
         // TODO: handle srcPoint same as desPoint
+
 
         // * create new transactionOrder
         P2PTransportOrder newP2PTransportOrder = new P2PTransportOrder();
@@ -118,20 +114,30 @@ public class TransportService {
             ExpressOrder expressOrder = srcPoint.getInventory().get(expressId);
             if (expressOrder == null)
                 throw new ResourceNotFoundException("Express Order");
-            expressOrder.setStatus(status);
             TrackingEvent trackingEvent = TrackingEvent.builder()
                     .timestamp(LocalDateTime.now())
                     .location(srcPoint.getAddress())
                     .build();
-            switch (status) {
-                case TRANSPORTING_FROM_SRC_TRANSACTION ->
-                        trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_SRC_TRANSACTION);
-                case TRANSPORTING_FROM_SRC_GATHERING ->
-                        trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_SRC_GATHERING);
-                case TRANSPORTING_FROM_DES_GATHERING ->
-                        trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_DES_GATHERING);
+            switch (expressOrder.getStatus()) {
+                case POSTED -> {
+                    trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_SRC_TRANSACTION);
+                    expressOrder.setStatus(ExpressOrder.Status.TRANSPORTING_FROM_SRC_TRANSACTION);
+                    expressOrder.getTrackingEvents().add(trackingEvent);
+                }
+                case TRANSPORTED_TO_SRC_GATHERING -> {
+                    trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_SRC_GATHERING);
+                    expressOrder.setStatus(ExpressOrder.Status.TRANSPORTING_FROM_SRC_GATHERING);
+                    expressOrder.getTrackingEvents().add(trackingEvent);
+                }
+                case TRANSPORTED_TO_DES_GATHERING -> {
+                    trackingEvent.setMessage(TrackingEvent.TRANSPORTING_FROM_DES_GATHERING);
+                    expressOrder.setStatus(ExpressOrder.Status.TRANSPORTING_FROM_DES_GATHERING);
+                    expressOrder.getTrackingEvents().add(trackingEvent);
+                }
+                case CANCELING -> {
+                    //TODO: maybe handle another business logic of canceling
+                }
             }
-            expressOrder.getTrackingEvents().add(trackingEvent);
             expressOrder.setTransportOrder(newP2PTransportOrder);
 //            trackingEvent = trackingEventRepository.save(trackingEvent);
             expressOrder = expressOrderRepository.save(expressOrder);
@@ -230,17 +236,17 @@ public class TransportService {
                     expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_TRANSACTION);
                     trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_TRANSACTION);
                 }
-                case ExpressOrder.Status.CANCELED -> {
+                case ExpressOrder.Status.CANCELING -> {
                     //TODO: Need a way to check source transactionPoint of this return
-//                    if (!p2pTransportOrder.getTo().equals(expressOrder.getTransportOrders().get(0).getFrom())) break;
-                    expressOrder.setStatus(ExpressOrder.Status.RETURNED);
-                    trackingEvent.setMessage(TrackingEvent.RETURNED);
+                    if (!p2pTransportOrder.getTo().equals(expressOrder.getSourcePoint())) break;
+                    expressOrder.setStatus(ExpressOrder.Status.CANCELED);
+                    trackingEvent.setMessage(TrackingEvent.CANCELED);
                 }
             }
 
             expressOrder.getTrackingEvents().add(trackingEvent);
 //            trackingEvent = trackingEventRepository.save(trackingEvent);
-            expressOrder = expressOrderRepository.save(expressOrder);
+            if(!expressOrder.getStatus().equals(ExpressOrder.Status.CANCELED))expressOrder = expressOrderRepository.save(expressOrder);
 
             // * Add to Inventory of destination
             p2pTransportOrder.getTo().getInventory().putIfAbsent(expressOrder.getId(), expressOrder);
@@ -256,7 +262,21 @@ public class TransportService {
         return true;
     }
 
+    @Transactional
     public boolean confirmDeliveryAExpressOrder(Long transactionPointId, UUID p2CTransportOrderId, UUID expressOrderId) {
+        return handleReceiveExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.DELIVERED);
+    }
+
+    @Transactional
+    public boolean cancelExpressOrderAtReceiver(Long transactionPointId, UUID p2CTransportOrderId, UUID expressOrderId) {
+        return handleReceiveExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.CANCELING);
+    }
+
+    @Transactional
+    private boolean handleReceiveExpressOrder(Long transactionPointId,
+                                              UUID p2CTransportOrderId,
+                                              UUID expressOrderId,
+                                              ExpressOrder.Status newStatus) {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
         P2CTransportOrder p2CTransportOrder = p2CTransportOrderRepository.findById(p2CTransportOrderId)
@@ -269,23 +289,26 @@ public class TransportService {
 
         // * Update info and add tracking event for the Express Order
         expressOrder.setReceivedTime(LocalDateTime.now());
-        expressOrder.setStatus(ExpressOrder.Status.DELIVERED);
-        TrackingEvent trackingEvent = new TrackingEvent(TrackingEvent.DELIVERED,
-                LocalDateTime.now(),
-                expressOrder.getReceiver().getAddress()
-        );
+        TrackingEvent trackingEvent = TrackingEvent.builder()
+                .location(expressOrder.getReceiver().getAddress())
+                .timestamp(LocalDateTime.now())
+                .build();
+        expressOrder.setStatus(newStatus);
+        trackingEvent.setMessage(switch (newStatus) {
+            case DELIVERED -> TrackingEvent.DELIVERED;
+            case CANCELING -> TrackingEvent.CANCELING;
+            default -> throw new IllegalStateException("Unexpected value: " + newStatus);
+        });
         expressOrder.getTrackingEvents().add(trackingEvent);
         expressOrderRepository.save(expressOrder);
 
         // * Remove this ExpressOrder from Transport Order
         p2CTransportOrder.getExpressOrders().remove(expressOrderId);
         // * Update status of Transport Order if needed
-        if(p2CTransportOrder.getExpressOrders().isEmpty()){
+        if (p2CTransportOrder.getExpressOrders().isEmpty()) {
             p2CTransportOrder.setStatus(TransportOrder.Status.SHIPPED);
             p2CTransportOrder.setArrivalTime(LocalDateTime.now());
         }
         return true;
     }
-
-
 }

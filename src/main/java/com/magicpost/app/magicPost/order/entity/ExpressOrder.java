@@ -3,6 +3,7 @@ package com.magicpost.app.magicPost.order.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.magicpost.app.magicPost.actor.entity.Customer;
 import com.magicpost.app.magicPost.order.Good;
+import com.magicpost.app.magicPost.point.entity.TransactionPoint;
 import com.magicpost.app.magicPost.transport.entity.TransportOrder;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -61,8 +62,6 @@ public class ExpressOrder {
     @Enumerated(EnumType.STRING)
     private Status status = Status.POSTED;
 
-    private LocalDateTime createTime = LocalDateTime.now();
-
     @ManyToOne
     @JoinTable(
             name = "express_orders_transport_order",
@@ -76,6 +75,10 @@ public class ExpressOrder {
     @CollectionTable(name = "tracking_event", joinColumns = @JoinColumn(name = "express_order_id"))
     private List<TrackingEvent> trackingEvents = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "source_point_id")
+    @JsonIgnore
+    private TransactionPoint sourcePoint;
 
     public enum Type {
         DOCUMENT,
@@ -92,6 +95,7 @@ public class ExpressOrder {
         TRANSPORTED_TO_DES_TRANSACTION,
         SHIPPING,
         DELIVERED,
+        CANCELING,
         CANCELED,
         RETURNED
     }
