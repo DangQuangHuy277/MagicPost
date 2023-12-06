@@ -1,0 +1,49 @@
+{
+  "sender": {
+    "name": "Linh",
+    "phone": "0987654321",
+    "address": {
+      "street": "Ngo 32",
+      "commune": "Chua Lang",
+      "district": "Dong Da",
+      "province": "Ha Noi"
+    }
+  },
+  "receiver": {
+    "name": "Huy",
+    "phone": "0987654320",
+    "address": {
+      "street": "57 Tran Quoc Vuong",
+      "commune": "Dich Vong Hau",
+      "district": "Cau Giay",
+      "province": "Ha Noi"
+    }
+  },
+  "type": "DOCUMENT",
+  "goods": [
+    {
+      "name": "candy",
+      "value": 100,
+      "quantity": 10
+    }
+  ],
+  "specialService": "string",
+  "senderInstructor": "IMMEDIATE_RETURN",
+  "sendTime": "2023-11-23T18:03:52.823Z",
+  "price": {
+    "mainTax": 100,
+    "subTax": 0,
+    "transportTax": 0,
+    "totalTax": 100,
+    "otherTax": 0,
+    "totalPrice": 100
+  },
+  "cashOnDelivery": {
+    "cod": 0,
+    "other": 0,
+    "totalCOD": 0
+  },
+  "actualWeight": 10,
+  "volumetricWeight": 0,
+  "businessInstructions": "string"
+}
