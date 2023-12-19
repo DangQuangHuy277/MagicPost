@@ -85,7 +85,7 @@ public class TransportService {
     @Transactional
     public P2PTransportOrderResponse makeTransportOrderFromGather(Long gatheringPointId,
                                                                   P2PTransportOrderRequest transportOrderRequest) {
-        if(gatheringPointId.equals(transportOrderRequest.getDestinationPointId()))
+        if (gatheringPointId.equals(transportOrderRequest.getDestinationPointId()))
             throw new InvalidBusinessConditionException("The Point can't not send Transport Order to itself");
         GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
@@ -94,7 +94,7 @@ public class TransportService {
         P2PTransportOrder p2PTransportOrder = switch (point) {
             case GatheringPoint gp -> makeP2pTransport(gatheringPoint, gp, transportOrderRequest);
             case TransactionPoint tp -> {
-                if(!tp.getGatheringPoint().equals(gatheringPoint))
+                if (!tp.getGatheringPoint().equals(gatheringPoint))
                     throw new InvalidBusinessConditionException("Can't send Transport Order that doesn't manage by this Gathering Point");
                 yield makeP2pTransport(gatheringPoint, tp, transportOrderRequest);
             }
@@ -109,6 +109,8 @@ public class TransportService {
                                                P2PTransportOrderRequest transportOrderRequest) {
         // TODO: handle srcPoint same as desPoint
 
+        // * update statistic of srcPoint
+        srcPoint.incrementTotalSendOrders();
 
         // * create new transactionOrder
         P2PTransportOrder newP2PTransportOrder = new P2PTransportOrder();
@@ -171,6 +173,7 @@ public class TransportService {
         if (!shipper.getTransactionPoint().equals(transactionPoint))
             throw new InvalidBusinessConditionException("The shipper is not associated with this transaction point.");
 
+
         // * Create new P2CTransportOrder
         P2CTransportOrder newP2CTransportOrder = new P2CTransportOrder();
         newP2CTransportOrder.setFrom(transactionPoint);
@@ -226,6 +229,9 @@ public class TransportService {
 
     @Transactional
     private boolean confirmP2PArrivalAtPoint(P2PTransportOrder p2pTransportOrder) {
+        // * Update statistic for destination ponint
+        p2pTransportOrder.getTo().incrementTotalReceiveOrders();
+
         for (ExpressOrder expressOrder : p2pTransportOrder.getExpressOrders().values()) {
             // * Update status and add tracking event
             TrackingEvent trackingEvent = TrackingEvent.builder()
@@ -242,8 +248,8 @@ public class TransportService {
                     trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_TRANSACTION);
                 }
                 case ExpressOrder.Status.TRANSPORTING_FROM_SRC_GATHERING -> {
-                    switch (p2pTransportOrder.getTo() ){
-                        case GatheringPoint gp-> {
+                    switch (p2pTransportOrder.getTo()) {
+                        case GatheringPoint gp -> {
                             expressOrder.setStatus(ExpressOrder.Status.TRANSPORTED_TO_DES_GATHERING);
                             trackingEvent.setMessage(TrackingEvent.TRANSPORTED_TO_DES_GATHERING);
                         }
@@ -305,6 +311,13 @@ public class TransportService {
         ExpressOrder expressOrder = p2CTransportOrder.getExpressOrders().get(expressOrderId);
         if (expressOrder == null)
             throw new InvalidBusinessConditionException("The Express Order is not exist in this Transport Order");
+
+        // * Update statistic of transactionPoint
+        switch (newStatus) {
+            case CANCELING -> transactionPoint.incrementCancelOrders();
+            case DELIVERED -> transactionPoint.incrementSuccessOrders();
+        }
+
 
         // * Update info and add tracking event for the Express Order
         expressOrder.setReceivedTime(LocalDateTime.now());

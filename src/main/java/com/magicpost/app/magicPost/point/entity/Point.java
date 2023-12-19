@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.magicpost.app.magicPost.address.entity.Address;
 import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -22,7 +25,9 @@ public abstract class Point {
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
+    @Setter(AccessLevel.NONE)
     private Long totalReceiveOrders = 0L;
+    @Setter(AccessLevel.NONE)
     private Long totalSendOrders = 0L;
     @Embedded
     @JsonIgnore
@@ -42,4 +47,12 @@ public abstract class Point {
     @JoinColumn(name = "point_id")
     @MapKey(name = "id")
     private Map<UUID, ExpressOrder> inventory = new HashMap<>();
+
+    public void incrementTotalSendOrders() {
+        totalSendOrders++;
+    }
+
+    public void incrementTotalReceiveOrders(){
+        totalReceiveOrders++;
+    }
 }

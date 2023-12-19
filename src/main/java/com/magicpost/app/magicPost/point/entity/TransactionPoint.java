@@ -15,6 +15,8 @@ import java.util.Set;
 @Getter
 @Setter
 public class TransactionPoint extends Point {
+    private Long successOrders = 0L;
+    private Long cancelOrders = 0L;
 
     @ManyToOne
     @JoinColumn(name = "gathering_point_id")
@@ -32,5 +34,13 @@ public class TransactionPoint extends Point {
     @OneToMany(mappedBy = "transactionPoint", orphanRemoval = true)
     @JsonManagedReference
     private Set<TransactionStaff> transactionStaffs = new LinkedHashSet<>();
+
+    public void incrementSuccessOrders() {
+        successOrders++;
+    }
+
+    public void incrementCancelOrders() {
+        cancelOrders++;
+    }
 
 }
