@@ -15,6 +15,7 @@ import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
 import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final GatheringPointRepository gatheringPointRepository;
     private final TransactionPointRepository transactionPointRepository;
+    private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
 
     public List<UserResponse> getAllUsers() {
@@ -41,6 +43,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
         if (gatheringPoint.getGatheringLeader() != null)
             throw new ResourceAlreadyExistsException("Gathering Leader of this point");
+        gatheringLeader.setPassword(passwordEncoder.encode(gatheringLeader.getPassword()));
         gatheringLeader.setGatheringPoint(gatheringPoint);
         gatheringLeader = userRepository.save(gatheringLeader);
 
@@ -54,6 +57,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
         if (transactionPoint.getTransactionLeader() != null)
             throw new ResourceAlreadyExistsException("Transaction Leader of this point");
+        transactionLeader.setPassword(passwordEncoder.encode(transactionLeader.getPassword()));
         transactionLeader.setTransactionPoint(transactionPoint);
         transactionLeader = userRepository.save(transactionLeader);
 
@@ -65,6 +69,7 @@ public class UserService {
     public UserResponse createNewGatheringStaff(Long gatheringPointId, GatheringStaff gatheringStaff) {
         GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        gatheringStaff.setPassword(passwordEncoder.encode(gatheringStaff.getPassword()));
         gatheringStaff.setGatheringPoint(gatheringPoint);
         gatheringStaff = userRepository.save(gatheringStaff);
 
@@ -76,6 +81,7 @@ public class UserService {
     public UserResponse createNewTransactionStaff(Long transactionPointId, TransactionStaff transactionStaff) {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
+        transactionStaff.setPassword(passwordEncoder.encode(transactionStaff.getPassword()));
         transactionStaff.setTransactionPoint(transactionPoint);
         transactionStaff = userRepository.save(transactionStaff);
 
@@ -87,15 +93,20 @@ public class UserService {
     public User createNewUser(User userRequest, String type) {
         User user = null;
         if (type.equals(TransactionStaff.class.getSimpleName())) {
-            user = userRepository.save(modelMapper.map(userRequest, TransactionStaff.class));
+            user = modelMapper.map(userRequest, TransactionStaff.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else if (type.equals(TransactionLeader.class.getSimpleName())) {
-            user = userRepository.save(modelMapper.map(userRequest, TransactionLeader.class));
+            user = modelMapper.map(userRequest, TransactionLeader.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else if (type.equals(GatheringStaff.class.getSimpleName())) {
-            user = userRepository.save(modelMapper.map(userRequest, GatheringStaff.class));
+            user = modelMapper.map(userRequest, GatheringStaff.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else if (type.equals(GatheringLeader.class.getSimpleName())) {
-            user = userRepository.save(modelMapper.map(userRequest, GatheringLeader.class));
+            user = modelMapper.map(userRequest, GatheringLeader.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         } else if (type.equals(CompanyLeader.class.getSimpleName())) {
-            user = userRepository.save(modelMapper.map(userRequest, CompanyLeader.class));
+            user = modelMapper.map(userRequest, CompanyLeader.class);
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         return user;
     }
