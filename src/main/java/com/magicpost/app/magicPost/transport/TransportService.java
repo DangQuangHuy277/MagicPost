@@ -6,7 +6,7 @@ import com.magicpost.app.magicPost.exception.InvalidBusinessConditionException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
 import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.order.entity.TrackingEvent;
-import com.magicpost.app.magicPost.order.repository.ExpressOrderRepository;
+import com.magicpost.app.magicPost.order.ExpressOrderRepository;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
@@ -110,7 +110,7 @@ public class TransportService {
         // TODO: handle srcPoint same as desPoint
 
         // * update statistic of srcPoint
-        srcPoint.incrementTotalSendOrders();
+        srcPoint.addNumberSendOrders(transportOrderRequest.getExpressOrderIdList().size());
 
         // * create new transactionOrder
         P2PTransportOrder newP2PTransportOrder = new P2PTransportOrder();
@@ -230,7 +230,7 @@ public class TransportService {
     @Transactional
     private boolean confirmP2PArrivalAtPoint(P2PTransportOrder p2pTransportOrder) {
         // * Update statistic for destination ponint
-        p2pTransportOrder.getTo().incrementTotalReceiveOrders();
+        p2pTransportOrder.getTo().addNumberReceiverOrders(p2pTransportOrder.getExpressOrders().size());
 
         for (ExpressOrder expressOrder : p2pTransportOrder.getExpressOrders().values()) {
             // * Update status and add tracking event
@@ -289,19 +289,19 @@ public class TransportService {
 
     @Transactional
     public boolean confirmDeliveryAExpressOrder(Long transactionPointId, UUID p2CTransportOrderId, UUID expressOrderId) {
-        return handleReceiveExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.DELIVERED);
+        return handleDeliveryExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.DELIVERED);
     }
 
     @Transactional
     public boolean cancelExpressOrderAtReceiver(Long transactionPointId, UUID p2CTransportOrderId, UUID expressOrderId) {
-        return handleReceiveExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.CANCELING);
+        return handleDeliveryExpressOrder(transactionPointId, p2CTransportOrderId, expressOrderId, ExpressOrder.Status.CANCELING);
     }
 
     @Transactional
-    private boolean handleReceiveExpressOrder(Long transactionPointId,
-                                              UUID p2CTransportOrderId,
-                                              UUID expressOrderId,
-                                              ExpressOrder.Status newStatus) {
+    private boolean handleDeliveryExpressOrder(Long transactionPointId,
+                                               UUID p2CTransportOrderId,
+                                               UUID expressOrderId,
+                                               ExpressOrder.Status newStatus) {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
         P2CTransportOrder p2CTransportOrder = p2CTransportOrderRepository.findById(p2CTransportOrderId)

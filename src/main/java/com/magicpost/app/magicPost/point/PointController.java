@@ -84,4 +84,6 @@ public class PointController {
         List<ExpressOrderResponse> inventory = pointService.getInventoryOfPoint(pointId);
         return inventory.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(inventory);
     }
+
+
 }

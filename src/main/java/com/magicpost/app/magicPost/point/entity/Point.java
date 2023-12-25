@@ -48,11 +48,11 @@ public abstract class Point {
     @MapKey(name = "id")
     private Map<UUID, ExpressOrder> inventory = new HashMap<>();
 
-    public void incrementTotalSendOrders() {
-        totalSendOrders++;
+    public void addNumberSendOrders(int size) {
+        totalSendOrders += size;
     }
 
-    public void incrementTotalReceiveOrders(){
-        totalReceiveOrders++;
+    public void addNumberReceiverOrders(int size){
+        totalReceiveOrders += size;
     }
 }

@@ -10,8 +10,6 @@ import lombok.Setter;
 public class PointResponse {
     private Long id;
     private String name;
-    private Long totalReceiveOrders;
-    private Long totalSendOrders;
     private AddressDTO address;
     private String phone;
     private String email;

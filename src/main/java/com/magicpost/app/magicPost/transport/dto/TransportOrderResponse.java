@@ -23,5 +23,5 @@ public class TransportOrderResponse {
     private LocalDateTime arrivalTime;
 
     private TransportOrder.Status status;
-    private List<ExpressOrderResponse> expressOrders;
+//    private List<ExpressOrderResponse> expressOrders;
 }

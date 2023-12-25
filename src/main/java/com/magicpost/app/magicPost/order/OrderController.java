@@ -2,6 +2,7 @@ package com.magicpost.app.magicPost.order;
 
 import com.magicpost.app.magicPost.order.dto.ExpressOrderRequest;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
+import com.magicpost.app.magicPost.order.dto.ExpressOrderStatisticalResponse;
 import com.magicpost.app.magicPost.order.dto.TrackingEventResponse;
 import com.magicpost.app.magicPost.order.entity.TrackingEvent;
 import jakarta.validation.Valid;
@@ -31,5 +32,11 @@ public class OrderController {
     ResponseEntity<?> getTrackingEventOfOrder(@PathVariable("express-order-id")UUID expressOrderId){
         List<TrackingEventResponse> trackingEvents = orderService.getTrackingEventOfOrder(expressOrderId);
         return trackingEvents.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(trackingEvents);
+    }
+
+    @GetMapping("/express-orders/statistic")
+    ResponseEntity<?> getStatisticOfAllExpressOrder(){
+        ExpressOrderStatisticalResponse statisticalResponse = orderService.getStatisticOfAllExpressOrder();
+        return ResponseEntity.ok(statisticalResponse);
     }
 }

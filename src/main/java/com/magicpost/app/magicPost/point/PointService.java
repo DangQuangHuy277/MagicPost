@@ -6,6 +6,9 @@ import com.magicpost.app.magicPost.exception.ResourceAlreadyExistsException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
 import com.magicpost.app.magicPost.point.dto.*;
+import com.magicpost.app.magicPost.point.dto.statistic.GatheringStatisticalResponse;
+import com.magicpost.app.magicPost.point.dto.statistic.StatisticalResponse;
+import com.magicpost.app.magicPost.point.dto.statistic.TransactionStatisticalResponse;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
@@ -18,7 +21,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -130,5 +132,28 @@ public class PointService {
         return point.getInventory().values().stream()
                 .map((element) -> modelMapper.map(element, ExpressOrderResponse.class))
                 .toList();
+    }
+
+    public GatheringStatisticalResponse getStatisticOfGathering(Long gatheringPointId) {
+        GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        return modelMapper.map(gatheringPoint, GatheringStatisticalResponse.class);
+    }
+
+    public TransactionStatisticalResponse getStatisticOfTransaction(Long transactionPointId) {
+        TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
+        return modelMapper.map(transactionPoint, TransactionStatisticalResponse.class);
+    }
+
+    public List<StatisticalResponse> getAllStatistic() {
+        List<Point> points = pointRepository.findAll();
+        return points.stream().map(
+                element -> {
+                    StatisticalResponse res = modelMapper.map(element, StatisticalResponse.class);
+                    res.setType(element.getClass().getSimpleName());
+                    return res;
+                }
+        ).toList();
     }
 }

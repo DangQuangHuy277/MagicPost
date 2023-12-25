@@ -6,11 +6,10 @@ import com.magicpost.app.magicPost.exception.InvalidBusinessConditionException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderRequest;
 import com.magicpost.app.magicPost.order.dto.ExpressOrderResponse;
+import com.magicpost.app.magicPost.order.dto.ExpressOrderStatisticalResponse;
 import com.magicpost.app.magicPost.order.dto.TrackingEventResponse;
 import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.order.entity.TrackingEvent;
-import com.magicpost.app.magicPost.order.repository.ExpressOrderRepository;
-//import com.magicpost.app.magicPost.order.repository.TrackingEventRepository;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
 import com.magicpost.app.magicPost.point.repository.TransactionPointRepository;
 import jakarta.transaction.Transactional;
@@ -39,6 +38,9 @@ public class OrderService {
 
         // * map field in request
         ExpressOrder newExpressOrder = modelMapper.map(expressOrderRequest, ExpressOrder.class);
+
+        // * update statistic
+        transactionPoint.addNumberReceiverOrders(1);
 
 
         // * set customer
@@ -70,5 +72,13 @@ public class OrderService {
         return expressOrder.getTrackingEvents().stream()
                 .map((element) -> modelMapper.map(element, TrackingEventResponse.class))
                 .toList();
+    }
+
+    public ExpressOrderStatisticalResponse getStatisticOfAllExpressOrder() {
+        Long totalOrders = expressOrderRepository.count();
+        Long totalSuccessOrders = expressOrderRepository.countByStatus(ExpressOrder.Status.DELIVERED);
+        Long totalCancelOrders = expressOrderRepository.countByStatusIn
+                (List.of(ExpressOrder.Status.CANCELED, ExpressOrder.Status.CANCELING));
+        return new ExpressOrderStatisticalResponse(totalOrders, totalSuccessOrders, totalCancelOrders);
     }
 }

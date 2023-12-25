@@ -10,6 +10,6 @@ import java.util.List;
 @Setter
 @Getter
 public class GatheringPointResponse extends PointResponse{
-    List<TransactionPointResponse> manageTransactionPoints;
+//    List<TransactionPointResponse> manageTransactionPoints;
     UserResponse gatheringLeader;
 }
