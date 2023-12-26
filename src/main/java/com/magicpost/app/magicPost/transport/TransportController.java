@@ -1,9 +1,6 @@
 package com.magicpost.app.magicPost.transport;
 
-import com.magicpost.app.magicPost.transport.dto.P2CTransportOrderRequest;
-import com.magicpost.app.magicPost.transport.dto.P2PTransportOrderRequest;
-import com.magicpost.app.magicPost.transport.dto.P2PTransportOrderResponse;
-import com.magicpost.app.magicPost.transport.dto.TransportOrderResponse;
+import com.magicpost.app.magicPost.transport.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -71,11 +68,27 @@ public class TransportController {
         return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
     }
 
+    @PutMapping("gathering-points/{gathering-point-id}/p2p-transport-orders/confirm-arrival")
+    ResponseEntity<?> confirmMultipleArrivalAtGathering(@PathVariable("gathering-point-id") Long gatheringPointId,
+                                                        @RequestBody List<UUID> p2pTransportOrderIdList){
+        boolean isConfirmed = transportService.confirmMultipleArrivalAtGathering(gatheringPointId, p2pTransportOrderIdList);
+        String message = "Successful transported to Gathering Point";
+        return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
+    }
+
     @PutMapping("/transaction-points/{transaction-point-id}/p2p-transport-orders/{p2p-transport-order-id}/confirm-arrival")
     ResponseEntity<?> confirmP2pArrivalAtTrans(@PathVariable("transaction-point-id") Long transactionPointId,
                                                @PathVariable("p2p-transport-order-id") UUID p2PTransportOrderId) {
         boolean isConfirmed = transportService.confirmP2PArrivalAtTrans(transactionPointId, p2PTransportOrderId);
         String message = "Successful transported to destination Transaction Point";
+        return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/transaction-points/{transaction-point-id}/p2p-transport-orders/confirm-arrival")
+    ResponseEntity<?> confirmMultipleArrivalAtTrans(@PathVariable("transaction-point-id") Long transactionPointId,
+                                                    List<UUID> p2pTransportOrderIdList){
+        boolean isConfirmed = transportService.confirmMultipleArrivalAtTrans(transactionPointId, p2pTransportOrderIdList);
+        String message = "Successful transported to Transaction Point";
         return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
     }
 

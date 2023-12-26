@@ -4,9 +4,9 @@ import com.magicpost.app.magicPost.actor.entity.Shipper;
 import com.magicpost.app.magicPost.actor.repository.ShipperRepository;
 import com.magicpost.app.magicPost.exception.InvalidBusinessConditionException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
+import com.magicpost.app.magicPost.order.ExpressOrderRepository;
 import com.magicpost.app.magicPost.order.entity.ExpressOrder;
 import com.magicpost.app.magicPost.order.entity.TrackingEvent;
-import com.magicpost.app.magicPost.order.ExpressOrderRepository;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import com.magicpost.app.magicPost.point.entity.Point;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
@@ -229,6 +229,10 @@ public class TransportService {
 
     @Transactional
     private boolean confirmP2PArrivalAtPoint(P2PTransportOrder p2pTransportOrder) {
+        // * Check valid status of this transport Order
+        if(!p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+            throw new InvalidBusinessConditionException("TransportOrder is already shipped");
+
         // * Update statistic for destination ponint
         p2pTransportOrder.getTo().addNumberReceiverOrders(p2pTransportOrder.getExpressOrders().size());
 
@@ -340,6 +344,34 @@ public class TransportService {
         if (p2CTransportOrder.getExpressOrders().isEmpty()) {
             p2CTransportOrder.setStatus(TransportOrder.Status.SHIPPED);
             p2CTransportOrder.setArrivalTime(LocalDateTime.now());
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean confirmMultipleArrivalAtGathering(Long gatheringPointId, List<UUID> p2pTransportOrderIdList) {
+        GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        for (UUID p2pTransportOrderId : p2pTransportOrderIdList) {
+            P2PTransportOrder p2pTransportOrder = p2PTransportOrderRepository.findById(p2pTransportOrderId)
+                    .orElseThrow(() -> new ResourceNotFoundException("P2P Transport Order"));
+            if (!p2pTransportOrder.getTo().getId().equals(gatheringPointId))
+                throw new InvalidBusinessConditionException("The TransportOrder is not match with destination Gathering Point");
+            confirmP2PArrivalAtPoint(p2pTransportOrder);
+        }
+        return true;
+    }
+
+    @Transactional
+    public boolean confirmMultipleArrivalAtTrans(Long transactionPointId, List<UUID> p2pTransportOrderIdList) {
+        TransactionPoint gatheringPoint = transactionPointRepository.findById(transactionPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        for (UUID p2pTransportOrderId : p2pTransportOrderIdList) {
+            P2PTransportOrder p2pTransportOrder = p2PTransportOrderRepository.findById(p2pTransportOrderId)
+                    .orElseThrow(() -> new ResourceNotFoundException("P2P Transport Order"));
+            if (!p2pTransportOrder.getTo().getId().equals(transactionPointId))
+                throw new InvalidBusinessConditionException("The TransportOrder is not match with destination Transaction Point");
+            confirmP2PArrivalAtPoint(p2pTransportOrder);
         }
         return true;
     }
