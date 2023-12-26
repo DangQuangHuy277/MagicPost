@@ -21,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -155,5 +156,12 @@ public class PointService {
                     return res;
                 }
         ).toList();
+    }
+
+    public List<TransactionPointResponse> getManagementTransactionPointOfGathering(Long gatheringPointId) {
+        List<TransactionPoint> transactionPoints = transactionPointRepository.findByGatheringPoint_Id(gatheringPointId);
+        return transactionPoints.stream()
+                .map((element) -> modelMapper.map(element, TransactionPointResponse.class))
+                .toList();
     }
 }

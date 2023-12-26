@@ -35,6 +35,12 @@ public class PointController {
                 ResponseEntity.ok(gatheringPoints);
     }
 
+    @GetMapping("/gathering-points/{gathering-point-id}/transaction-points")
+    ResponseEntity<?> getManagementTransactionPointOfGathering(@PathVariable("gathering-point-id") Long gatheringPointId){
+        List<TransactionPointResponse> pointResponses = pointService.getManagementTransactionPointOfGathering(gatheringPointId);
+        return pointResponses.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(pointResponses);
+    }
+
     @GetMapping("/transaction-points")
     ResponseEntity<?> getAllTransactionPoints() {
         List<TransactionPointResponse> transactionPoints = pointService.getAllTransactionPoints();
