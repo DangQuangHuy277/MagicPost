@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @RestController
@@ -14,6 +15,18 @@ import java.util.UUID;
 @RequestMapping("/api/v1")
 public class TransportController {
     private final TransportService transportService;
+
+    @GetMapping("/p2p-transport-orders/{p2p-transport-order-id}/express-orders")
+    ResponseEntity<?> getExpressFromP2PTransportOrder(@PathVariable("p2p-transport-order-id") UUID p2pTransportOrderId){
+        Set<UUID> expressOrderIds = transportService.getExpressFromP2PTransportOrder(p2pTransportOrderId);
+        return expressOrderIds.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(expressOrderIds);
+    }
+
+    @GetMapping("/p2c-transport-orders/{p2p-transport-order-id}/express-orders")
+    ResponseEntity<?> getExpressFromP2CTransportOrder(@PathVariable("p2p-transport-order-id") UUID p2cTransportOrderId){
+        Set<UUID> expressOrderIds = transportService.getExpressFromP2CTransportOrder(p2cTransportOrderId);
+        return expressOrderIds.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(expressOrderIds);
+    }
 
     @GetMapping("/transaction-points/{transaction-point-id}/p2p-transport-orders")
     ResponseEntity<?> getP2PTransportOrderToTransPoint(@PathVariable("transaction-point-id") Long transactionPointId) {

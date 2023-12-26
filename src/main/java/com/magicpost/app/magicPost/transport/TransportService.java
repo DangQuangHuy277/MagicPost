@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -313,8 +314,11 @@ public class TransportService {
         if (!p2CTransportOrder.getFrom().equals(transactionPoint))
             throw new InvalidBusinessConditionException("The Transport Order is not from this Transaction Point");
         ExpressOrder expressOrder = p2CTransportOrder.getExpressOrders().get(expressOrderId);
-        if (expressOrder == null)
+        if (expressOrder == null) {
             throw new InvalidBusinessConditionException("The Express Order is not exist in this Transport Order");
+        }
+        if (expressOrder.getStatus().equals(ExpressOrder.Status.SHIPPING))
+            throw new InvalidBusinessConditionException("Already shipped or cancel");
 
         // * Update statistic of transactionPoint
         switch (newStatus) {
@@ -374,5 +378,21 @@ public class TransportService {
             confirmP2PArrivalAtPoint(p2pTransportOrder);
         }
         return true;
+    }
+
+    public Set<UUID> getExpressFromP2PTransportOrder(UUID p2pTransportOrderId) {
+        P2PTransportOrder p2pTransportOrder = p2PTransportOrderRepository.findById(p2pTransportOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("P2PTransportOrder"));
+        if(p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+            throw new InvalidBusinessConditionException("This TransportOrder is already shipped");
+        return p2pTransportOrder.getExpressOrders().keySet();
+    }
+
+    public Set<UUID> getExpressFromP2CTransportOrder(UUID p2cTransportOrderId) {
+        P2CTransportOrder p2CTransportOrder = p2CTransportOrderRepository.findById(p2cTransportOrderId)
+                .orElseThrow(() -> new ResourceNotFoundException("P2CTransportOrder"));
+        if(p2CTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+            throw new InvalidBusinessConditionException("This TransportOrder is already shipped");
+        return p2CTransportOrder.getExpressOrders().keySet();
     }
 }

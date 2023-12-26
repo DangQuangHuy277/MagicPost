@@ -20,18 +20,24 @@ import java.util.UUID;
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping("/transaction-points/{transaction-point-id}/express-orders")
-    ResponseEntity<?> createNewExpressOrder(@PathVariable("transaction-point-id") Long transactionPointId,
-            @Valid @RequestBody ExpressOrderRequest expressOrderRequest) {
-        ExpressOrderResponse returnOrder = orderService.createNewExpressOrder(transactionPointId ,expressOrderRequest);
-        return ResponseEntity.created(URI.create("/api/v1/express-orders/" + returnOrder.getId()))
-                .body(returnOrder);
+    @GetMapping("/express-orders/{express-order-id}")
+    ResponseEntity<?> getExpressOrderDetail(@PathVariable("express-order-id") UUID expressOrderId){
+        ExpressOrderResponse expressOrderResponse = orderService.getExpressOrderDetail(expressOrderId);
+        return ResponseEntity.ok(expressOrderResponse);
     }
 
     @GetMapping("/express-orders/{express-order-id}/tracking-events")
     ResponseEntity<?> getTrackingEventOfOrder(@PathVariable("express-order-id")UUID expressOrderId){
         List<TrackingEventResponse> trackingEvents = orderService.getTrackingEventOfOrder(expressOrderId);
         return trackingEvents.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(trackingEvents);
+    }
+
+    @PostMapping("/transaction-points/{transaction-point-id}/express-orders")
+    ResponseEntity<?> createNewExpressOrder(@PathVariable("transaction-point-id") Long transactionPointId,
+            @Valid @RequestBody ExpressOrderRequest expressOrderRequest) {
+        ExpressOrderResponse returnOrder = orderService.createNewExpressOrder(transactionPointId ,expressOrderRequest);
+        return ResponseEntity.created(URI.create("/api/v1/express-orders/" + returnOrder.getId()))
+                .body(returnOrder);
     }
 
     @GetMapping("/express-orders/statistic")

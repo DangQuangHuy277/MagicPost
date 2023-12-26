@@ -81,4 +81,11 @@ public class OrderService {
                 (List.of(ExpressOrder.Status.CANCELED, ExpressOrder.Status.CANCELING));
         return new ExpressOrderStatisticalResponse(totalOrders, totalSuccessOrders, totalCancelOrders);
     }
+
+    public ExpressOrderResponse getExpressOrderDetail(UUID expressOrderId) {
+        return modelMapper.map(
+                expressOrderRepository.findById(expressOrderId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Express Order")),
+                ExpressOrderResponse.class);
+    }
 }
