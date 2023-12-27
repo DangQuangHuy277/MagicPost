@@ -5,11 +5,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class TransactionStatisticalResponse extends StatisticalResponse {
     private Long successOrders;
     private Long cancelOrders;
-
-    public TransactionStatisticalResponse(Long pointId, String name, Long totalSendOrders, Long totalReceiveOrders) {
-        super(pointId, name, totalSendOrders, totalReceiveOrders);
-    }
 }
