@@ -99,7 +99,7 @@ public class TransportController {
 
     @PutMapping("/transaction-points/{transaction-point-id}/p2p-transport-orders/confirm-arrival")
     ResponseEntity<?> confirmMultipleArrivalAtTrans(@PathVariable("transaction-point-id") Long transactionPointId,
-                                                    List<UUID> p2pTransportOrderIdList){
+                                                    @RequestBody List<UUID> p2pTransportOrderIdList){
         boolean isConfirmed = transportService.confirmMultipleArrivalAtTrans(transactionPointId, p2pTransportOrderIdList);
         String message = "Successful transported to Transaction Point";
         return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();

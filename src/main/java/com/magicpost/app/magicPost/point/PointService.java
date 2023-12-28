@@ -22,8 +22,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -129,11 +127,11 @@ public class PointService {
         pointRepository.deleteById(pointId);
     }
 
-    public List<UUID> getInventoryOfPoint(Long pointId) {
+    public List<ExpressOrderResponse> getInventoryOfPoint(Long pointId) {
         Point point = pointRepository.findById(pointId)
                 .orElseThrow(() -> new ResourceNotFoundException("Point"));
         return point.getInventory().values().stream()
-                .map(ExpressOrder::getId)
+                .map((element) -> modelMapper.map(element, ExpressOrderResponse.class))
                 .toList();
     }
 

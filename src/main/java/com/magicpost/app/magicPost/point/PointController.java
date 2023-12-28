@@ -88,7 +88,7 @@ public class PointController {
 
     @GetMapping("points/{point-id}/inventory")
     ResponseEntity<?> getInventoryOfPoint(@PathVariable("point-id") Long pointId){
-        List<UUID> inventory = pointService.getInventoryOfPoint(pointId);
+        List<ExpressOrderResponse> inventory = pointService.getInventoryOfPoint(pointId);
         return inventory.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(inventory);
     }
 
