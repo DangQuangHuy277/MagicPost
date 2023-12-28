@@ -231,7 +231,7 @@ public class TransportService {
     @Transactional
     private boolean confirmP2PArrivalAtPoint(P2PTransportOrder p2pTransportOrder) {
         // * Check valid status of this transport Order
-        if(!p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+        if(p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
             throw new InvalidBusinessConditionException("TransportOrder is already shipped");
 
         // * Update statistic for destination ponint

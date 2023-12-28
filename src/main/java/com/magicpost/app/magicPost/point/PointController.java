@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -87,7 +88,7 @@ public class PointController {
 
     @GetMapping("points/{point-id}/inventory")
     ResponseEntity<?> getInventoryOfPoint(@PathVariable("point-id") Long pointId){
-        List<ExpressOrderResponse> inventory = pointService.getInventoryOfPoint(pointId);
+        List<UUID> inventory = pointService.getInventoryOfPoint(pointId);
         return inventory.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(inventory);
     }
 
