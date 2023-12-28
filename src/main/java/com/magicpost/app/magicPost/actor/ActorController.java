@@ -12,16 +12,17 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class ActorController {
     private final ActorService actorService;
 
-    @GetMapping("transaction-points/{transaction-point-id}/shippers")
+    @GetMapping("/transaction-points/{transaction-point-id}/shippers")
     ResponseEntity<?> getAllShipperInTransPoint(@PathVariable("transaction-point-id") Long transactionPointId) {
         Set<Shipper> shippers = actorService.getAllShipperInTransPoint(transactionPointId);
         return shippers.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(shippers);
     }
 
-    @PostMapping("transaction-points/{transaction-point-id}/shippers")
+    @PostMapping("/transaction-points/{transaction-point-id}/shippers")
     ResponseEntity<?> addNewShipperToTransPoint(@PathVariable("transaction-point-id") Long transactionPointId,
                                                 @RequestBody @Valid Shipper shipper) {
         Shipper newShipper = actorService.addNewShipperToTransPoint(transactionPointId, shipper);
@@ -29,7 +30,7 @@ public class ActorController {
                 .body(newShipper);
     }
 
-    @DeleteMapping("transaction-points/{transaction-point-id}/shippers/{shipper-id}")
+    @DeleteMapping("/transaction-points/{transaction-point-id}/shippers/{shipper-id}")
     ResponseEntity<?> removeShipperAtTransPoint(@PathVariable("transaction-point-id") Long transactionPointId,
                                                 @PathVariable("shipper-id")UUID shipperId){
         actorService.removeShipperAtTransPoint(transactionPointId, shipperId);

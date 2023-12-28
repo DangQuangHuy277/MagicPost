@@ -81,7 +81,7 @@ public class TransportController {
         return isConfirmed ? ResponseEntity.ok(Map.of("message", message)) : ResponseEntity.badRequest().build();
     }
 
-    @PutMapping("gathering-points/{gathering-point-id}/p2p-transport-orders/confirm-arrival")
+    @PutMapping("/gathering-points/{gathering-point-id}/p2p-transport-orders/confirm-arrival")
     ResponseEntity<?> confirmMultipleArrivalAtGathering(@PathVariable("gathering-point-id") Long gatheringPointId,
                                                         @RequestBody List<UUID> p2pTransportOrderIdList){
         boolean isConfirmed = transportService.confirmMultipleArrivalAtGathering(gatheringPointId, p2pTransportOrderIdList);
