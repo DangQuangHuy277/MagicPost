@@ -733,6 +733,7 @@ TRANSACTION_STAFF	48	trangtruong@example.com	$2a$10$mTWIw3XJCA1ncegG4SoCa.bzEO5y
 TRANSACTION_STAFF	49	uyvu@example.com	$2a$10$3BZrsKiNhnrV3tE3.KrFEuNez6pEfVp8YC7rLQftuSF/x6/DDtlF.	0909345678	Vũ Văn Uy	\N	16
 TRANSACTION_STAFF	50	vannguyen@example.com	$2a$10$Wge9yNIKWkMoQXMyBMEQKOiDm.A7j.nAf6tYtVyKJDEVLXpSqoScS	0909456789	Nguyễn Thị Vân	\N	17
 TRANSACTION_STAFF	51	xuongtran@example.com	$2a$10$qLGKMqrfBs3L3He3.QKFPO0gMNe1mjuqR3Pb8ryihyy4WldFjmmoO	0909567890	Trần Văn Xương	\N	37
+COMPANY_LEADER	52	huydang2773@gmail.com	$2a$10$OzxO5lj/VoAY7G1iPLAZKu/jWitg/zMPdZxvdpkLiIBx/U3yHvdpO	0327614682	Đặng Quang Huy	\N	\N
 \.
 
 
@@ -789,7 +790,7 @@ SELECT pg_catalog.setval('public.province_seq', 1, false);
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: magicpost
 --
 
-SELECT pg_catalog.setval('public.users_id_seq', 51, true);
+SELECT pg_catalog.setval('public.users_id_seq', 52, true);
 
 
 --
