@@ -52,7 +52,7 @@ public class PointController {
                 ResponseEntity.ok(transactionPoints);
     }
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PostMapping("/gathering-points")
     ResponseEntity<?> createNewGatheringPoint(@Valid @RequestBody PointRequest pointRequest) {
         GatheringPointResponse newPoint = pointService.createNewGatheringPoint(pointRequest);
@@ -61,7 +61,7 @@ public class PointController {
     }
 
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PostMapping("/gathering-points/{gathering-point-id}/transaction-points")
     ResponseEntity<?> createNewTransactionPoint(@PathVariable("gathering-point-id") Long gatheringPointId,
                                                 @Valid @RequestBody PointRequest pointRequest) {
@@ -70,7 +70,7 @@ public class PointController {
                 .body(newPoint);
     }
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PatchMapping("/points/{point-id}")
     ResponseEntity<?> updatePoint(@PathVariable("point-id") Long pointId,
                                   @RequestBody PointRequest pointRequest) {
@@ -78,7 +78,7 @@ public class PointController {
         return ResponseEntity.ok(updatedPoint);
     }
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PatchMapping("transaction-points/{transaction-point-id}")
     ResponseEntity<?> changeGatheringPointOfTransactionPoint(@PathVariable("transaction-point-id") Long transactionPointId,
                                                              @RequestBody TransactionPointRequest transactionPointRequest) {
@@ -86,7 +86,7 @@ public class PointController {
                 pointService.changeGatheringPointOfTransactionPoint(transactionPointId, transactionPointRequest);
         return ResponseEntity.ok(updatedTransactionPoint);
     }
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @DeleteMapping("/points/{point-id}")
     ResponseEntity<?> deletePoint(@PathVariable("point-id") Long pointId){
         pointService.deletePoint(pointId);

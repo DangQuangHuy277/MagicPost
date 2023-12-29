@@ -39,7 +39,7 @@ public class OrderController {
         return ResponseEntity.created(URI.create("/api/v1/express-orders/" + returnOrder.getId()))
                 .body(returnOrder);
     }
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @GetMapping("/express-orders/statistic")
     ResponseEntity<?> getStatisticOfAllExpressOrder() {
         ExpressOrderStatisticalResponse statisticalResponse = orderService.getStatisticOfAllExpressOrder();
