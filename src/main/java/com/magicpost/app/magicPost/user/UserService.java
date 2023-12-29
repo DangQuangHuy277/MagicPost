@@ -90,25 +90,10 @@ public class UserService {
         return modelMapper.map(transactionStaff, UserResponse.class);
     }
 
-    public User createNewUser(User userRequest, String type) {
-        User user = null;
-        if (type.equals(TransactionStaff.class.getSimpleName())) {
-            user = modelMapper.map(userRequest, TransactionStaff.class);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else if (type.equals(TransactionLeader.class.getSimpleName())) {
-            user = modelMapper.map(userRequest, TransactionLeader.class);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else if (type.equals(GatheringStaff.class.getSimpleName())) {
-            user = modelMapper.map(userRequest, GatheringStaff.class);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else if (type.equals(GatheringLeader.class.getSimpleName())) {
-            user = modelMapper.map(userRequest, GatheringLeader.class);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        } else if (type.equals(CompanyLeader.class.getSimpleName())) {
-            user = modelMapper.map(userRequest, CompanyLeader.class);
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-        }
-        return user;
+    public UserResponse createNewCompanyLeader(CompanyLeader companyLeader) {
+        companyLeader.setPassword(passwordEncoder.encode(companyLeader.getPassword()));
+        userRepository.save(companyLeader);
+        return modelMapper.map(companyLeader, UserResponse.class);
     }
 
     public void deleteUser(Long userId) {

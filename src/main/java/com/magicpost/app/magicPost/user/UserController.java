@@ -2,6 +2,7 @@ package com.magicpost.app.magicPost.user;
 
 import com.magicpost.app.magicPost.user.dto.UserResponse;
 import com.magicpost.app.magicPost.user.entity.User;
+import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
 import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
 import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
@@ -25,9 +26,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @PostMapping("/users")
-    ResponseEntity<?> createNewUser(@Valid @RequestBody User user, @RequestParam String type) {
-        User returnUser = userService.createNewUser(user, type);
+    @PostMapping("/company-leader")
+    ResponseEntity<?> createNewUser(@Valid @RequestBody CompanyLeader user) {
+        UserResponse returnUser = userService.createNewCompanyLeader(user);
         return ResponseEntity.created(URI.create("/api/v1/users/" + returnUser.getId())).body(returnUser);
     }
 
