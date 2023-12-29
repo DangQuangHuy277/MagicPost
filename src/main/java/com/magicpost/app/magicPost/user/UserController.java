@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -77,4 +78,19 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('TRANSACTIONLEADER') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
+    @PostMapping("/transaction-points/{transaction-point-id}/transaction-staffs/{transaction-staff-id}")
+    ResponseEntity<?> removeStaffAtTransaction(@PathVariable("transaction-point-id") Long transactionPointId,
+                                               @PathVariable("transaction-staff-id")Long transactionStaffId){
+        userService.removeStaffAtTransaction(transactionPointId, transactionStaffId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PreAuthorize("hasRole('GATHERINGLEADER') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)")
+    @PostMapping("/gathering-points/{gathering-point-id}/gathering-staffs/{transaction-staff-id}")
+    ResponseEntity<?> removeStaffAtGathering(@PathVariable("transaction-point-id") Long gatheringPointId,
+                                               @PathVariable("transaction-staff-id")Long gatheringStaffId){
+        userService.removeStaffAtGathering(gatheringPointId, gatheringStaffId);
+        return ResponseEntity.noContent().build();
+    }
 }

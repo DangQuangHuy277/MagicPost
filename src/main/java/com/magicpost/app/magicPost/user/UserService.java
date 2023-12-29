@@ -7,7 +7,6 @@ import com.magicpost.app.magicPost.point.entity.TransactionPoint;
 import com.magicpost.app.magicPost.point.repository.GatheringPointRepository;
 import com.magicpost.app.magicPost.point.repository.TransactionPointRepository;
 import com.magicpost.app.magicPost.user.dto.UserResponse;
-import com.magicpost.app.magicPost.user.entity.User;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
 import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
@@ -98,5 +97,27 @@ public class UserService {
 
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
+    }
+
+    public void removeStaffAtTransaction(Long transactionPointId, Long transactionStaffId) {
+        TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction Point"));
+        TransactionStaff transactionStaff = transactionPoint.getTransactionStaffs().stream()
+                .filter(transactionStaff1 -> transactionStaff1.getId().equals(transactionStaffId))
+                .findAny().orElseThrow(() -> new ResourceNotFoundException("Transaction Staff"));
+        transactionPoint.getTransactionStaffs().remove(transactionStaff);
+        transactionPointRepository.save(transactionPoint);
+        userRepository.delete(transactionStaff);
+    }
+
+    public void removeStaffAtGathering(Long gatheringPointId, Long gatheringStaffId) {
+        GatheringPoint gatheringPoint = gatheringPointRepository.findById(gatheringPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point"));
+        GatheringStaff gatheringStaff = gatheringPoint.getGatheringStaffs().stream()
+                .filter(gatheringStaff1 -> gatheringStaff1.getId().equals(gatheringStaffId))
+                .findAny().orElseThrow(() -> new ResourceNotFoundException("Gathering Staff"));
+        gatheringPoint.getGatheringStaffs().remove(gatheringStaff);
+        gatheringPointRepository.save(gatheringPoint);
+        userRepository.delete(gatheringStaff);
     }
 }
