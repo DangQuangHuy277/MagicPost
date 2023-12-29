@@ -10,3 +10,5 @@ rsa:
   public-key: classpath:certs/public.pem
 jwt:
   expirationMs: 8400000
+
+

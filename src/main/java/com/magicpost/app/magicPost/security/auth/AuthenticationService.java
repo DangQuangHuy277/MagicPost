@@ -2,6 +2,11 @@ package com.magicpost.app.magicPost.security.auth;
 
 import com.magicpost.app.magicPost.security.user.UserDetailsImpl;
 import com.magicpost.app.magicPost.user.UserRepository;
+import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
+import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
+import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
+import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
+import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,8 +21,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -30,8 +33,6 @@ public class AuthenticationService {
     private Integer jwtExpirationMs;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
@@ -40,15 +41,23 @@ public class AuthenticationService {
         // * Generate accessToken
         UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
         SimpleGrantedAuthority role = (SimpleGrantedAuthority) user.getAuthorities().toArray()[0];
-        JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
+        JwtClaimsSet.Builder jwtClaimsSetBuilder = JwtClaimsSet.builder()
                 .claim("email", user.getUsername())
-                .claim("role", role.getAuthority())
-                .build();
-        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(jwtClaimsSet);
+                .claim("scope", role.getAuthority())
+                .claim("phone", user.getUser().getPhone());
+        Long pointId = switch (user.getUser()) {
+            case GatheringLeader gl -> gl.getGatheringPoint().getId();
+            case GatheringStaff gs -> gs.getGatheringPoint().getId();
+            case TransactionLeader tl -> tl.getTransactionPoint().getId();
+            case TransactionStaff ts -> ts.getTransactionPoint().getId();
+            case CompanyLeader cl -> -1L;
+            default -> throw new IllegalStateException("Unexpected value: " + user.getUser());
+        };
+        if (!pointId.equals(-1L)) jwtClaimsSetBuilder.claim("pointId", pointId);
+        JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(jwtClaimsSetBuilder.build());
         Jwt jwt = jwtEncoder.encode(jwtEncoderParameters);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
         return new AuthenticationResponse(userDetails.getUser().getUsername(), jwt.getTokenValue());
     }
 }

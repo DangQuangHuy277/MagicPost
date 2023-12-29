@@ -7,10 +7,11 @@ import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
 import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
 import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -32,6 +33,8 @@ public class UserController {
         return ResponseEntity.created(URI.create("/api/v1/users/" + returnUser.getId())).body(returnUser);
     }
 
+
+    @PreAuthorize("hasRole(COMPANYLEADER')")
     @PostMapping("/gathering-points/{gathering-point-id}/gathering-leader")
     ResponseEntity<?> createNewGatheringLeader(@PathVariable("gathering-point-id") Long gatheringPointId,
                                                @Valid @RequestBody GatheringLeader gatheringLeader) {
@@ -40,6 +43,7 @@ public class UserController {
                 .body(returnUser);
     }
 
+    @PreAuthorize("hasRole(COMPANYLEADER')")
     @PostMapping("/transaction-points/{transaction-point-id}/transaction-leader")
     ResponseEntity<?> createNewTransactionLeader(@PathVariable("transaction-point-id") Long transactionPointId,
                                                  @Valid @RequestBody TransactionLeader transactionLeader) {
@@ -48,6 +52,7 @@ public class UserController {
                 .body(returnUser);
     }
 
+    @PreAuthorize("hasRole('GATHERINGLEADER') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)")
     @PostMapping("/gathering-points/{gathering-point-id}/gathering-staffs")
     ResponseEntity<?> createNewGatheringStaff(@PathVariable("gathering-point-id") Long gatheringPointId,
                                               @Valid @RequestBody GatheringStaff gatheringStaff) {
@@ -56,6 +61,7 @@ public class UserController {
                 .body(returnUser);
     }
 
+    @PreAuthorize("hasRole('TRANSACTIONLEADER') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
     @PostMapping("/transaction-points/{transaction-point-id}/transaction-staffs")
     ResponseEntity<?> createNewTransactionStaff(@PathVariable("transaction-point-id") Long transactionPointId,
                                                 @Valid @RequestBody TransactionStaff transactionStaff) {
@@ -64,9 +70,11 @@ public class UserController {
                 .body(returnUser);
     }
 
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @DeleteMapping("/users/{user-id}")
     ResponseEntity<?> deleteUser(@PathVariable("user-id") Long userId) {
         userService.deleteUser(userId);
         return ResponseEntity.noContent().build();
     }
+
 }
