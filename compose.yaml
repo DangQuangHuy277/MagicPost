@@ -8,7 +8,4 @@ services:
     ports:
       - '5432'
     volumes:
-      - ./data/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
-      - ./data/province.sql:/docker-entrypoint-initdb.d/2_province.sql
-      - ./data/district.sql:/docker-entrypoint-initdb.d/3_district.sql
-      - ./data/commune.sql:/docker-entrypoint-initdb.d/4_commune.sql
+      - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql
