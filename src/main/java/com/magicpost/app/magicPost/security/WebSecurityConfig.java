@@ -113,8 +113,9 @@ public class WebSecurityConfig {
                 .oauth2ResourceServer(configure -> configure.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(
                         authorization -> authorization
-                                .requestMatchers("/api/v1/auth/**", "/error", "/swagger-ui/**").permitAll()
-                                .anyRequest().permitAll()
+                                .requestMatchers("/api/v1/auth/**", "/error", "/swagger-ui/**",
+                                        "api/v1/express-orders/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .exceptionHandling(
                         exception -> exception
