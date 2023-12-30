@@ -11,4 +11,5 @@ import java.util.UUID;
 public class TransactionPointResponse extends PointResponse {
     private Long GatheringPointId;
     private Long transactionLeaderId;
+    private String transactionLeaderUsername;
 }

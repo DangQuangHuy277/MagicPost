@@ -13,4 +13,5 @@ import java.util.UUID;
 public class GatheringPointResponse extends PointResponse{
 //    List<TransactionPointResponse> manageTransactionPoints;
     private Long gatheringLeaderId;
+    private String gatheringLeaderUsername;
 }
