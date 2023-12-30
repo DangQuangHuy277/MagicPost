@@ -35,7 +35,7 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PostMapping("/gathering-points/{gathering-point-id}/gathering-leader")
     ResponseEntity<?> createNewGatheringLeader(@PathVariable("gathering-point-id") Long gatheringPointId,
                                                @Valid @RequestBody GatheringLeader gatheringLeader) {
@@ -44,7 +44,7 @@ public class UserController {
                 .body(returnUser);
     }
 
-    @PreAuthorize("hasRole(COMPANYLEADER')")
+    @PreAuthorize("hasRole('COMPANYLEADER')")
     @PostMapping("/transaction-points/{transaction-point-id}/transaction-leader")
     ResponseEntity<?> createNewTransactionLeader(@PathVariable("transaction-point-id") Long transactionPointId,
                                                  @Valid @RequestBody TransactionLeader transactionLeader) {
