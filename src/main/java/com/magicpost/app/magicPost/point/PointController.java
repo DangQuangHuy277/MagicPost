@@ -94,7 +94,7 @@ public class PointController {
     }
 
 
-    @PreAuthorize("hasAnyRole('TRANSACTIONSTAFF','GATHERINGSTAFF') and @customAuthorization.belongsPoint(authentication,#pointId)")
+    @PreAuthorize("(hasAnyRole('TRANSACTIONSTAFF','GATHERINGSTAFF') and @customAuthorization.belongsPoint(authentication,#pointId)) or hasRole('COMPANYLEADER')")
     @GetMapping("points/{point-id}/inventory")
     ResponseEntity<?> getInventoryOfPoint(@PathVariable("point-id") Long pointId){
         List<ExpressOrderResponse> inventory = pointService.getInventoryOfPoint(pointId);

@@ -16,14 +16,14 @@ import java.util.List;
 public class StatisticController {
     private final PointService pointService;
 
-    @PreAuthorize("hasRole('GATHERINGLEADER') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)")
+    @PreAuthorize("(hasRole('GATHERINGLEADER') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)) or hasRole('COMPANYLEADER")
     @GetMapping("gathering-points/{gathering-point-id}/statistic")
     ResponseEntity<?> getStatisticOfGathering(@PathVariable("gathering-point-id") Long gatheringPointId){
         GatheringStatisticalResponse statisticalResponse = pointService.getStatisticOfGathering(gatheringPointId);
         return ResponseEntity.ok(statisticalResponse);
     }
 
-    @PreAuthorize("hasRole('TRANSACTIONLEADER') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
+    @PreAuthorize("(hasRole('TRANSACTIONLEADER') and @customAuthorization.belongsPoint(authentication,#transactionPointId)) or hasRoler('COMPANYLEADER')")
     @GetMapping("transaction-points/{transaction-point-id}/statistic")
     ResponseEntity<?> getStatisticOfTransaction(@PathVariable("transaction-point-id") Long transactionPointId){
         TransactionStatisticalResponse statisticalResponse = pointService.getStatisticOfTransaction(transactionPointId);
