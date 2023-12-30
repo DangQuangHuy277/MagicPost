@@ -9,6 +9,7 @@ import com.magicpost.app.magicPost.point.repository.TransactionPointRepository;
 import com.magicpost.app.magicPost.user.dto.UserResponse;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
 import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
+import com.magicpost.app.magicPost.user.entity.leader.Leader;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
 import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
 import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
@@ -119,5 +120,12 @@ public class UserService {
         gatheringPoint.getGatheringStaffs().remove(gatheringStaff);
         gatheringPointRepository.save(gatheringPoint);
         userRepository.delete(gatheringStaff);
+    }
+
+    public List<UserResponse> getAllLeaders() {
+        return userRepository.findAll().stream()
+                .filter(user -> user instanceof Leader)
+                .map((element) -> modelMapper.map(element, UserResponse.class))
+                .toList();
     }
 }

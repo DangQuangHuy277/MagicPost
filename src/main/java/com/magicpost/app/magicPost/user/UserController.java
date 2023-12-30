@@ -28,6 +28,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @PreAuthorize("hasRole('COMPANYLEADER')")
+    @GetMapping("/leaders")
+    ResponseEntity<?> getAllLeaders(){
+        return ResponseEntity.ok(userService.getAllLeaders());
+    }
+
     @PostMapping("/company-leader")
     ResponseEntity<?> createNewUser(@Valid @RequestBody CompanyLeader user) {
         UserResponse returnUser = userService.createNewCompanyLeader(user);
