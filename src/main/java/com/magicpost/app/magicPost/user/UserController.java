@@ -1,13 +1,11 @@
 package com.magicpost.app.magicPost.user;
 
 import com.magicpost.app.magicPost.user.dto.UserResponse;
-import com.magicpost.app.magicPost.user.entity.User;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
 import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
 import com.magicpost.app.magicPost.user.entity.leader.TransactionLeader;
 import com.magicpost.app.magicPost.user.entity.staff.GatheringStaff;
 import com.magicpost.app.magicPost.user.entity.staff.TransactionStaff;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +27,7 @@ public class UserController {
 
     @PreAuthorize("hasRole('COMPANYLEADER')")
     @GetMapping("/leaders")
-    ResponseEntity<?> getAllLeaders(){
+    ResponseEntity<?> getAllLeaders() {
         return ResponseEntity.ok(userService.getAllLeaders());
     }
 
@@ -78,24 +75,25 @@ public class UserController {
     }
 
     @PreAuthorize("hasRole('COMPANYLEADER')")
-    @DeleteMapping("/users/{user-id}")
-    ResponseEntity<?> deleteUser(@PathVariable("user-id") Long userId) {
-        userService.deleteUser(userId);
+    @DeleteMapping("points/{point-id}/leader")
+    ResponseEntity<?> removeLeaderAtPoint(@PathVariable("point-id") Long pointId) {
+        userService.removeLeaderAtPoint(pointId);
         return ResponseEntity.noContent().build();
     }
 
+
     @PreAuthorize("hasRole('TRANSACTIONLEADER') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
-    @PostMapping("/transaction-points/{transaction-point-id}/transaction-staffs/{transaction-staff-id}")
+    @DeleteMapping("/transaction-points/{transaction-point-id}/transaction-staffs/{transaction-staff-id}")
     ResponseEntity<?> removeStaffAtTransaction(@PathVariable("transaction-point-id") Long transactionPointId,
-                                               @PathVariable("transaction-staff-id")Long transactionStaffId){
+                                               @PathVariable("transaction-staff-id") Long transactionStaffId) {
         userService.removeStaffAtTransaction(transactionPointId, transactionStaffId);
         return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("hasRole('GATHERINGLEADER') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)")
-    @PostMapping("/gathering-points/{gathering-point-id}/gathering-staffs/{transaction-staff-id}")
+    @DeleteMapping("/gathering-points/{gathering-point-id}/gathering-staffs/{transaction-staff-id}")
     ResponseEntity<?> removeStaffAtGathering(@PathVariable("transaction-point-id") Long gatheringPointId,
-                                               @PathVariable("transaction-staff-id")Long gatheringStaffId){
+                                             @PathVariable("transaction-staff-id") Long gatheringStaffId) {
         userService.removeStaffAtGathering(gatheringPointId, gatheringStaffId);
         return ResponseEntity.noContent().build();
     }

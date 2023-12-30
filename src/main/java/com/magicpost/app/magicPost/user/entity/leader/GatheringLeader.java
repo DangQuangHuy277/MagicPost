@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
 import io.swagger.v3.oas.annotations.Hidden;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,7 +13,7 @@ import lombok.Setter;
 @Setter
 @DiscriminatorValue("GATHERING_LEADER")
 public class GatheringLeader extends Leader{
-    @OneToOne(mappedBy = "gatheringLeader",orphanRemoval = true)
+    @OneToOne(mappedBy = "gatheringLeader",orphanRemoval = false)
     @Hidden
     @JsonBackReference
     private GatheringPoint gatheringPoint;

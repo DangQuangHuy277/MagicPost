@@ -3,10 +3,13 @@ package com.magicpost.app.magicPost.user;
 import com.magicpost.app.magicPost.exception.ResourceAlreadyExistsException;
 import com.magicpost.app.magicPost.exception.ResourceNotFoundException;
 import com.magicpost.app.magicPost.point.entity.GatheringPoint;
+import com.magicpost.app.magicPost.point.entity.Point;
 import com.magicpost.app.magicPost.point.entity.TransactionPoint;
 import com.magicpost.app.magicPost.point.repository.GatheringPointRepository;
+import com.magicpost.app.magicPost.point.repository.PointRepository;
 import com.magicpost.app.magicPost.point.repository.TransactionPointRepository;
 import com.magicpost.app.magicPost.user.dto.UserResponse;
+import com.magicpost.app.magicPost.user.entity.User;
 import com.magicpost.app.magicPost.user.entity.leader.CompanyLeader;
 import com.magicpost.app.magicPost.user.entity.leader.GatheringLeader;
 import com.magicpost.app.magicPost.user.entity.leader.Leader;
@@ -28,6 +31,7 @@ public class UserService {
     private final TransactionPointRepository transactionPointRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final PointRepository<Point> pointRepository;
 
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll().stream().map(user -> {
@@ -96,9 +100,6 @@ public class UserService {
         return modelMapper.map(companyLeader, UserResponse.class);
     }
 
-    public void deleteUser(Long userId) {
-        userRepository.deleteById(userId);
-    }
 
     public void removeStaffAtTransaction(Long transactionPointId, Long transactionStaffId) {
         TransactionPoint transactionPoint = transactionPointRepository.findById(transactionPointId)
@@ -127,5 +128,23 @@ public class UserService {
                 .filter(user -> user instanceof Leader)
                 .map((element) -> modelMapper.map(element, UserResponse.class))
                 .toList();
+    }
+
+    public void removeLeaderAtPoint(Long pointId) {
+        Point point = pointRepository.findById(pointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Point"));
+        switch (point){
+            case GatheringPoint gp -> {
+                GatheringLeader gl = gp.getGatheringLeader();
+                gp.setGatheringLeader(null);
+                userRepository.delete(gl);
+            }
+            case TransactionPoint tp -> {
+                TransactionLeader tl = tp.getTransactionLeader();
+                tp.setTransactionLeader(null);
+                userRepository.delete(tl);
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + point);
+        }
     }
 }
