@@ -32,6 +32,13 @@ public class ModelMapperConfig {
                 userResponse.setEmail(source.getEmail());
                 userResponse.setPhone(source.getPhone());
                 userResponse.setRole(source.getClass().getSimpleName());
+                switch (source){
+                    case TransactionLeader tl -> userResponse.setPointId(tl.getTransactionPoint().getId());
+                    case GatheringLeader gl -> userResponse.setPointId(gl.getGatheringPoint().getId());
+                    case GatheringStaff gs -> userResponse.setPointId(gs.getGatheringPoint().getId());
+                    case TransactionStaff ts -> userResponse.setPointId(ts.getTransactionPoint().getId());
+                    default -> {}
+                }
                 return userResponse;
             }
         };
