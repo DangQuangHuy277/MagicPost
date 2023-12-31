@@ -2,6 +2,7 @@ package com.magicpost.app.magicPost.user.entity;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +22,8 @@ public class User {
     @NotNull
     private String username;
     @NotNull
+    @Email
+    @Column(unique = true)
     private String email;
     private String password;
     private String phone;

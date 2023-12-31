@@ -693,13 +693,6 @@ GATHERING_LEADER	8	yendothi@example.com	$2a$10$WGsKuvEt3AS1QJwKap5iP.U6n.DKivBgT
 GATHERING_LEADER	9	tuanhoang@example.com	$2a$10$asSbCmQT652zow7diohGuOEAysEFWEc3/w/YzKCNApTceJ34XCGpG	0909901234	Hoàng Văn Tuấn	\N	\N
 GATHERING_LEADER	10	huongnguyenthithu@example.com	$2a$10$kHMubJG07qkNHzUf7zOAUOQuVHAaV7TcS3YTjfD/ha8nQLUh3BG6O	0909012345	Nguyễn Thị Thu Hương	\N	\N
 GATHERING_STAFF	11	annguyen@example.com	$2a$10$Me1Bslvk2p1oarzUct.X9./dUZP70tx.YdaYEh3X1jSpcIaPkcXda	0909123456	Nguyễn Văn An	1	\N
-GATHERING_STAFF	12	binhtran@example.com	$2a$10$5cD49M2E7/ouaNiP3nwAJOzAvwQ3NmSoFdTTMivp4o8fXfI8OtCoC	0909234567	Trần Thị Bình	2	\N
-GATHERING_STAFF	13	cuongle@example.com	$2a$10$Mb2BW2F4a.B2rGSHP4hPYuqAHuwMbM4zo73krv9CcwC/edbt3UaKG	0909345678	Lê Văn Cường	3	\N
-GATHERING_STAFF	14	dungpham@example.com	$2a$10$NFRAo9n1IQ.dg.5J9xKyKeIpVSLQ1kRkBoEDrr2oaSmY0XA3l.jze	0909456789	Phạm Thị Dung	4	\N
-GATHERING_STAFF	15	eovu@example.com	$2a$10$OrykEeXVH/kiEgwjnhzP7Old7ctxE0PD5.UVOhebO92UqX6ZrMtCW	0909567890	Vũ Văn Eo	5	\N
-GATHERING_STAFF	16	phuongnguyen@example.com	$2a$10$MyBaWihqviVO5rs9ezJkrutVVZiP13hhefls7195zRl0tdydFRN8a	0909678901	Nguyễn Thị Phượng	6	\N
-GATHERING_STAFF	17	giatran@example.com	$2a$10$nVaG3p7eniYghRekpBwlrOmzeQMhLrti6A2RBYSnMnE1.nu3OE3O2	0909789012	Trần Văn Gia	7	\N
-GATHERING_STAFF	18	hado@example.com	$2a$10$uz0Gk8GNAMj6ieCRbCuRn.aw.9aJg3WWE.mCx0mN6K0xPV8Pbqzxy	0909890123	Đỗ Thị Hà	8	\N
 GATHERING_STAFF	19	iahoang@example.com	$2a$10$zuM5oeib7aWyVN.CqH0eguD60zqwdaIj8RUO4OzAYrlKU1Qj/Lb2.	0909901234	Hoàng Văn Ia	9	\N
 TRANSACTION_LEADER	20	binhtran@example.com	$2a$10$ZRAm2LINtFeWqvUZU.gZLuedtUJny4Mch83y31UuVXqUpwhWLQwXG	0909234567	Trần Thị Bình	\N	\N
 TRANSACTION_LEADER	21	cuongle@example.com	$2a$10$AR1K0y2y5E4/BjsgZRMOQOCO2.LjrnwaBxJSSj2pGcIbRHTLfvaWK	0909345678	Lê Văn Cường	\N	\N
@@ -815,6 +808,14 @@ ALTER TABLE ONLY public.customer
 
 ALTER TABLE ONLY public.district
     ADD CONSTRAINT district_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users email_unique; Type: CONSTRAINT; Schema: public; Owner: magicpost
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT email_unique UNIQUE (email);
 
 
 --
