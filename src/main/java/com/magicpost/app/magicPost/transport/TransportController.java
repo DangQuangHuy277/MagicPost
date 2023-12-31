@@ -24,8 +24,8 @@ public class TransportController {
         return expressOrderIds.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(expressOrderIds);
     }
 
-    @GetMapping("/p2c-transport-orders/{p2p-transport-order-id}/express-orders")
-    ResponseEntity<?> getExpressFromP2CTransportOrder(@PathVariable("p2p-transport-order-id") UUID p2cTransportOrderId) {
+    @GetMapping("/p2c-transport-orders/{p2c-transport-order-id}/express-orders")
+    ResponseEntity<?> getExpressFromP2CTransportOrder(@PathVariable("p2c-transport-order-id") UUID p2cTransportOrderId) {
         Set<UUID> expressOrderIds = transportService.getExpressFromP2CTransportOrder(p2cTransportOrderId);
         return expressOrderIds.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(expressOrderIds);
     }
@@ -74,7 +74,7 @@ public class TransportController {
         return ResponseEntity.ok(newP2PTransportOrder);
     }
 
-    @PreAuthorize("hasRole('GATHERINGSTAFF') and @customAuthorization.belongsPoint(authentication,#gatheringPointId)")
+    @PreAuthorize("hasRole('TRANSACTIONSTAFF') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
     @PostMapping("/transaction-points/{transaction-point-id}/p2c-transport-orders")
     ResponseEntity<?> makeTransportOrderToCustomer(@PathVariable("transaction-point-id") Long transactionPointId,
                                                    @RequestBody P2CTransportOrderRequest p2CTransportOrderRequest) {

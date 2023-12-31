@@ -34,7 +34,6 @@ public class ActorController {
     }
 
     @PreAuthorize("hasRole('TRANSACTIONSTAFF') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
-
     @DeleteMapping("/transaction-points/{transaction-point-id}/shippers/{shipper-id}")
     ResponseEntity<?> removeShipperAtTransPoint(@PathVariable("transaction-point-id") Long transactionPointId,
                                                 @PathVariable("shipper-id")UUID shipperId){
