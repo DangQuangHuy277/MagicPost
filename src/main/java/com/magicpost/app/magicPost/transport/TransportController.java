@@ -1,9 +1,6 @@
 package com.magicpost.app.magicPost.transport;
 
-import com.magicpost.app.magicPost.transport.dto.P2CTransportOrderRequest;
-import com.magicpost.app.magicPost.transport.dto.P2PTransportOrderRequest;
-import com.magicpost.app.magicPost.transport.dto.P2PTransportOrderResponse;
-import com.magicpost.app.magicPost.transport.dto.TransportOrderResponse;
+import com.magicpost.app.magicPost.transport.dto.*;
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -56,8 +53,8 @@ public class TransportController {
 
     @PreAuthorize("hasRole('TRANSACTIONSTAFF') and @customAuthorization.belongsPoint(authentication,#transactionPointId)")
     @GetMapping("/transaction-points/{transaction-point-id}/p2c-transport-orders")
-    ResponseEntity<?> getP2CTransportOrderToTransactionPoint(@PathVariable("transaction-point-id") Long transactionPointId) {
-        List<P2PTransportOrderResponse> transportOrders = transportService.getP2PTransportOrderToTransPoint(transactionPointId);
+    ResponseEntity<?> getP2CTransportOrderOfTransactionPoint(@PathVariable("transaction-point-id") Long transactionPointId) {
+        List<P2CTransportOrderResponse> transportOrders = transportService.getP2CTransportOrderOfTransactionPoint(transactionPointId);
         return transportOrders.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(transportOrders);
     }
 

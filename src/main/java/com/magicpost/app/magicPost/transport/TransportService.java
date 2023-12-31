@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +47,7 @@ public class TransportService {
     public List<P2PTransportOrderResponse> getTransportOrderToThisPoint(Long pointId) {
         if (!pointRepository.existsById(pointId))
             throw new ResourceNotFoundException("Point");
-        return p2PTransportOrderRepository.findByTo_Id(pointId).stream()
+        return p2PTransportOrderRepository.findByTo_IdAndStatus(pointId, TransportOrder.Status.SHIPPING).stream()
                 .map((element) -> modelMapper.map(element, P2PTransportOrderResponse.class))
                 .toList();
     }
@@ -54,7 +55,7 @@ public class TransportService {
     public List<P2PTransportOrderResponse> getP2PTransportOrderToTransPoint(Long transactionPointId) {
         if (!transactionPointRepository.existsById(transactionPointId))
             throw new ResourceNotFoundException("Transaction Point");
-        return p2PTransportOrderRepository.findByTo_Id(transactionPointId).stream()
+        return p2PTransportOrderRepository.findByTo_IdAndStatus(transactionPointId, TransportOrder.Status.SHIPPING).stream()
                 .map((element) -> modelMapper.map(element, P2PTransportOrderResponse.class))
                 .toList();
     }
@@ -62,7 +63,7 @@ public class TransportService {
     public List<P2PTransportOrderResponse> getP2PTransportOrderToGatherPoint(Long gatheringPointId) {
         if (!gatheringPointRepository.existsById(gatheringPointId))
             throw new ResourceNotFoundException("Gathering Point");
-        return p2PTransportOrderRepository.findByTo_Id(gatheringPointId).stream()
+        return p2PTransportOrderRepository.findByTo_IdAndStatus(gatheringPointId, TransportOrder.Status.SHIPPING).stream()
                 .map((element) -> modelMapper.map(element, P2PTransportOrderResponse.class))
                 .toList();
     }
@@ -231,7 +232,7 @@ public class TransportService {
     @Transactional
     private boolean confirmP2PArrivalAtPoint(P2PTransportOrder p2pTransportOrder) {
         // * Check valid status of this transport Order
-        if(p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+        if (p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
             throw new InvalidBusinessConditionException("TransportOrder is already shipped");
 
         // * Update statistic for destination ponint
@@ -383,7 +384,7 @@ public class TransportService {
     public Set<UUID> getExpressFromP2PTransportOrder(UUID p2pTransportOrderId) {
         P2PTransportOrder p2pTransportOrder = p2PTransportOrderRepository.findById(p2pTransportOrderId)
                 .orElseThrow(() -> new ResourceNotFoundException("P2PTransportOrder"));
-        if(p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+        if (p2pTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
             throw new InvalidBusinessConditionException("This TransportOrder is already shipped");
         return p2pTransportOrder.getExpressOrders().keySet();
     }
@@ -391,8 +392,14 @@ public class TransportService {
     public Set<UUID> getExpressFromP2CTransportOrder(UUID p2cTransportOrderId) {
         P2CTransportOrder p2CTransportOrder = p2CTransportOrderRepository.findById(p2cTransportOrderId)
                 .orElseThrow(() -> new ResourceNotFoundException("P2CTransportOrder"));
-        if(p2CTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
+        if (p2CTransportOrder.getStatus().equals(TransportOrder.Status.SHIPPED))
             throw new InvalidBusinessConditionException("This TransportOrder is already shipped");
         return p2CTransportOrder.getExpressOrders().keySet();
+    }
+
+    public List<P2CTransportOrderResponse> getP2CTransportOrderOfTransactionPoint(Long transactionPointId) {
+        return p2CTransportOrderRepository.findByFrom_Id(transactionPointId).stream()
+                .map((element) -> modelMapper.map(element, P2CTransportOrderResponse.class))
+                .collect(Collectors.toList());
     }
 }
