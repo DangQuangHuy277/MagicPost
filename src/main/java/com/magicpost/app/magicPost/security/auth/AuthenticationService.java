@@ -21,6 +21,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -44,7 +46,9 @@ public class AuthenticationService {
         JwtClaimsSet.Builder jwtClaimsSetBuilder = JwtClaimsSet.builder()
                 .claim("email", user.getUsername())
                 .claim("scope", role.getAuthority())
-                .claim("phone", user.getUser().getPhone());
+                .claim("phone", user.getUser().getPhone())
+                .issuedAt(Instant.now())
+                .expiresAt(Instant.now().plusMillis(jwtExpirationMs));
         Long pointId = switch (user.getUser()) {
             case GatheringLeader gl -> gl.getGatheringPoint().getId();
             case GatheringStaff gs -> gs.getGatheringPoint().getId();
