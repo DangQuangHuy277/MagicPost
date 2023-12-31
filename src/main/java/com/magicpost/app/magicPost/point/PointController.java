@@ -38,6 +38,12 @@ public class PointController {
                 ResponseEntity.ok(gatheringPoints);
     }
 
+    @GetMapping("/gathering-points/{gathering-point-id}")
+    ResponseEntity<?> getDetailsOfGatherPoint(@PathVariable("gathering-point-id") Long gatheringPointId){
+        GatheringPointResponse gatheringPointResponse = pointService.getDetailsOfGatherPoint(gatheringPointId);
+        return ResponseEntity.ok(gatheringPointResponse);
+    }
+
     @GetMapping("/gathering-points/{gathering-point-id}/transaction-points")
     ResponseEntity<?> getManagementTransactionPointOfGathering(@PathVariable("gathering-point-id") Long gatheringPointId){
         List<TransactionPointResponse> pointResponses = pointService.getManagementTransactionPointOfGathering(gatheringPointId);
@@ -50,6 +56,12 @@ public class PointController {
         return transactionPoints.isEmpty() ?
                 ResponseEntity.noContent().build() :
                 ResponseEntity.ok(transactionPoints);
+    }
+
+    @GetMapping("/transaction-points/{transaction-point-id}")
+    ResponseEntity<?> getDetailOfTransPoint(@PathVariable("transaction-point-id") Long transactionPointId){
+        TransactionPointResponse transactionPointResponse = pointService.getDetailOfTransPoint(transactionPointId);
+        return ResponseEntity.ok(transactionPointResponse);
     }
 
     @PreAuthorize("hasRole('COMPANYLEADER')")

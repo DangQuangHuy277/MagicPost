@@ -164,4 +164,14 @@ public class PointService {
                 .map((element) -> modelMapper.map(element, TransactionPointResponse.class))
                 .toList();
     }
+
+    public TransactionPointResponse getDetailOfTransPoint(Long transactionPointId) {
+        return modelMapper.map(transactionPointRepository.findById(transactionPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Transaction Point")), TransactionPointResponse.class);
+    }
+
+    public GatheringPointResponse getDetailsOfGatherPoint(Long gatheringPointId) {
+        return modelMapper.map(gatheringPointRepository.findById(gatheringPointId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gathering Point")), GatheringPointResponse.class);
+    }
 }
